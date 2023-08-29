@@ -1,0 +1,46 @@
+{
+    "connexion": [
+      {
+        "id_user": "00",
+        "nom": "Allan Fournier",
+        "admin": true
+      },
+      {
+        "id_user": "01",
+        "nom": "Enlong Chen",
+        "admin": true
+      },
+      {
+        "id_user": "02",
+        "nom": "Lina Jabour",
+        "admin": false
+      },
+      {
+        "id_user": "03",
+        "nom": "Ava Newman",
+        "admin": false
+      },
+      {
+        "id_user": "04",
+        "nom": "Liev Newman",
+        "admin": false
+      },
+      {
+        "id_user": "05",
+        "nom": "Elizaveta Titova",
+        "admin": false
+      },
+      {
+        "id_user": "06",
+        "nom": "Ashkel Zemiya",
+        "admin": false
+      }
+    ],
+    "produit": [
+      {},
+      {},
+      {},
+      {},
+      {}
+    ]
+  }
