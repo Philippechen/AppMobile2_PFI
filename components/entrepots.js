@@ -1,9 +1,20 @@
+/**
+ * Date: 28 aout 2023
+ * 
+ * énoncé:
+ * Une page de localisation affiche des icônes entrepôts et un titre pour les quatre entrepôts du commerce en ligne. 
+ * Aussi, affichez deux informations graphiques pour souligner le dépôt le plus proche de l’adresse de livraison. 
+ * Comme le chemin et des cercles autour des entrepôts. (ici, utilisez un fichier JSON pour les coordonnées).
+ */
 import {useState} from 'react';
 import { Text, SafeAreaView, StyleSheet, FlatList, Pressable, useWindowDimensions } from 'react-native';
 import Constants from 'expo-constants';
 import entrepots from "../assets/entrepots.json";
 import MapView, {Marker, Circle, Polyline} from 'react-native-maps';
 
+/**
+ * Todo: Lire la position réelle si on peut.
+ */
 const regionMontreal = {
                        "latitude": 45.57959635115827,
                        "latitudeDelta": 0.2898489739060395,
@@ -52,7 +63,6 @@ export default function EntrepotsScreen() {
         region={region}
         onRegionChangeComplete={setRegion}>
         {markTous}
-        {Cercle(500, 'green')}
         {Cercle(3000, 'red')}
 
       </MapView>

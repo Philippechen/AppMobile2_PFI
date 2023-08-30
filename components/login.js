@@ -5,11 +5,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
+/*
+ Import des Components 
+*/
 import EntrepotsScreen from './entrepots'
+import ProduitsScreen from './panier'
+const ManageScreen = () => {}
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+//Todo: nous devons vérifier c'est qui l'utilisateur, est administrateur ou clientelle?
+var isClient = true;
 
 // titre du magasin
 const storeTitle = "Electro +";
@@ -76,6 +86,7 @@ return (
 
 // pour la navigation en bas de l'écran via icone
 const TabsNavigator = () => (
+
   <Tab.Navigator initialRouteName="Accueil">
     <Tab.Screen
       name="Accueil"
@@ -86,15 +97,41 @@ const TabsNavigator = () => (
         ),
       }}
     />
-    <Tab.Screen
-      name="Entrepôt"
-      component={EntrepotsScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
-        ),
-      }}
-    />
+    { 
+      /**
+       * Si clientelle login, afficher produitsScreen
+       * Si administrateur login, afficher manageScreen 
+       */
+      isClient ? <Tab.Screen
+        name="Electroniques"
+        component={ProduitsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
+          ),
+        }}
+      /> : <Tab.Screen
+        name="Management"
+        component={ManageScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
+          ),
+        }}
+      />
+    }
+    {
+      // Afficher tous les entrepôts sur le map, il y a encore des travaux à faire.
+      <Tab.Screen
+        name="Entrepôt"
+        component={EntrepotsScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MaterialCommunityIcons name="warehouse" size={36} color={focused ? 'green' : 'lightgrey'} />
+          ),
+        }}
+      />
+    }
     <Tab.Screen
       name="À propos"
       component={ContactUsScreen}

@@ -1,0 +1,5 @@
+ [
+    {"id": 1, "nbr":1, "nom": "Céllulaires", "description":"Blabla", "prix":111.2, "image":"https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg"},
+    {"id": 2, "nbr":2, "nom": "Tablettes", "description":"Blabla", "prix":222.2, "image":"https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg"},
+    {"id": 3, "nbr":3, "nom": "Ordinateurs", "description":"Blabla", "prix":333.2,  "image":"https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg"}
+ ]
