@@ -1,0 +1,6 @@
+ [
+    {"id": 1, "coord": {"latitude": 45.5585974, "longitude": -73.8944696}, "nom": "Les 3 Galo Pains"},
+    {"id": 2, "coord": {"latitude": 45.56769697492668, "longitude": -73.74387973779393}, "nom": "Boulangerie Première Moisson - Laval"},
+    {"id": 3, "coord": {"latitude": 45.551731306295196, "longitude": -73.62664697751977}, "nom": "Boulangerie Jarry"},
+    {"id": 4, "coord": {"latitude": 45.672059238098115, "longitude":-73.87254086635213}, "nom": "Boulangerie MariePain"}
+  ]

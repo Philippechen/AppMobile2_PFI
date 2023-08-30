@@ -6,6 +6,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
+import EntrepotsScreen from './entrepots'
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -81,6 +83,15 @@ const TabsNavigator = () => (
       options={{
         tabBarIcon: ({ focused }) => (
           <Ionicons name="ios-home" size={28} color={focused ? 'green' : 'lightgrey'} />
+        ),
+      }}
+    />
+    <Tab.Screen
+      name="Entrepôt"
+      component={EntrepotsScreen}
+      options={{
+        tabBarIcon: ({ focused }) => (
+          <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
         ),
       }}
     />
