@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import { Text, SafeAreaView, StyleSheet, FlatList, Pressable, useWindowDimensions,ScrollView } from 'react-native';
+import { Text, SafeAreaView, StyleSheet, FlatList, Pressable, useWindowDimensions } from 'react-native';
 import Constants from 'expo-constants';
 import entrepots from "../assets/entrepots.json";
 import MapView, {Marker, Circle, Polyline} from 'react-native-maps';
@@ -14,8 +14,9 @@ const regionMontreal = {
 export default function EntrepotsScreen() {
   const [pressedId, setPressedId] = useState(-1);
   const {height, width} = useWindowDimensions();
+  const [region, setRegion] = useState(regionMontreal);
 
-  const Items = ({item}) => {
+  const listeTous = ({item}) => {
     const isPressed = item.id === pressedId;
     return (
       <Pressable style={[styles.pressable, {backgroundColor: isPressed ? "hsl(50, 100%, 50%)" :"hsl(38, 100%, 50%)"}]}
@@ -25,8 +26,6 @@ export default function EntrepotsScreen() {
       </Pressable>
     )
   }
-
-  const [region, setRegion] = useState(regionMontreal);
 
   let markTous = entrepots.map(item=> {
     const isPressed = item.id === pressedId;
@@ -44,7 +43,7 @@ export default function EntrepotsScreen() {
     <SafeAreaView style={styles.container}>
       <FlatList
         data={entrepots}
-        renderItem={Items}
+        renderItem={listeTous}
         keyExtractor={item=>item.id}
         />
       <MapView
