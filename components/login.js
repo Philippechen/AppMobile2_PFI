@@ -1,10 +1,10 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native';
+import { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Pressable } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
+
 import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 
 /*
@@ -14,6 +14,8 @@ import EntrepotsScreen from './entrepots'
 import ProduitsScreen from './panier'
 const ManageScreen = () => {}
 
+//database
+import { Database } from './database';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -21,70 +23,62 @@ const Stack = createNativeStackNavigator();
 //Todo: nous devons vérifier c'est qui l'utilisateur, est administrateur ou clientelle?
 var isClient = true;
 
-// titre du magasin
+//titre qui se trouve en haut de l'app
 const storeTitle = "Electro +";
 
-// les 2 ci-dessous inutile pour linstant - a remplacer par la bonne direction - (une base pour quelque chose si besoin)
-
+// pages produtis & à propos (pt creer fichier pour eux ?)
 const ElectronicsScreen = () => (
-  <View style={styles.screenContainer}>
+  <View style={styles.container}>
     <Text>Électroniques</Text>
   </View>
 );
 
-const BooksScreen = () => (
-  <View style={styles.screenContainer}>
-    <Text>Livres</Text>
-  </View>
-);
-
-//page à propos
 const ContactUsScreen = () => (
-  <View style={styles.screenContainer} >
-    <Text >Page à propos</Text>
-    <Text>Allan</Text>
-    <Text>Enlong</Text>
+  <View style={styles.container}>
+    <Text>À propos</Text>
   </View>
 );
 
-//Page Accueil / login
+// page homeScreen (pt creer fichier pour lui ?)
 const HomeScreen = ({ navigation }) => {
+  // pour la db le useState. 
+  const [users, setUsers] = useState([]);
+  const db = new Database("users");
 
-    const [users, setUsers] = useState([]);
-    
-    // cherche notre database users 
-    useEffect(() => {
-      const data = require('./database.json');
-      setUsers(data.connexion);
-    }, []);
+  // onPress button -> envoie dans page produit electroniques (pt creer fichier pour lui ?)
+  const handleValidationElec = () => {
+    navigation.navigate('Produits: Électroniques');
+  };
 
-// inutile pour linstant - a remplacer par la bonne direction - (une base pour quelque chose si besoin)
+ // Récupérer les données des utilisateurs depuis la base de données pour les afficher à l'écran
+  useEffect(() => {
+    db.execute("CREATE TABLE IF NOT EXISTS users (id_user TEXT PRIMARY KEY, nom TEXT, admin BOOLEAN);")
+      .then(() => db.execute("SELECT * FROM users"))
+      .then(resultSet => {
+        console.log("Result set:", resultSet);  
+        setUsers(resultSet.rows);
+      })
+      .catch(error => {
+        console.error("An error occurred:", error);
+      });
+  }, []);
 
-//   const handleValidationElec = () => {
-//     navigation.navigate('Produits: Electroniques');
-//   };
-
-//   const handleValidationLivres = () => {
-//     navigation.navigate('Produits: Livres');
-//   };
-
-// map sur id user pour resortir le nom
-return (
+  return (
     <View style={styles.container}>
-      {users.map((user) => (
-        <Pressable
-          key={user.id_user}
-          style={styles.pressable}
+      {users.map(user => (
+        <Pressable 
+        key={user.id_user} 
+        style={styles.pressable}
+        onPress={handleValidationElec}
         >
-          <Text>{user.nom}</Text>
+          <Text style={styles.pressableText}>{user.nom}</Text>
         </Pressable>
       ))}
     </View>
   );
 };
-// modifier le style (pas complet pour le pressable, + add onPress={() => handleUserPress(user)} pt ?)
 
-// pour la navigation en bas de l'écran via icone
+// menu bottom avec icons
 const TabsNavigator = () => (
 
   <Tab.Navigator initialRouteName="Accueil">
@@ -143,26 +137,26 @@ const TabsNavigator = () => (
     />
   </Tab.Navigator>
 );
-
-//incomplet. Premier stack.screen = login
+//navigation + appel à tabsNavigator (menu avec buttons + icons)
 const MainNavigator = () => (
   <Stack.Navigator>
     <Stack.Screen name="Tabs" component={TabsNavigator} options={{headerTitle: storeTitle}} />
-    <Stack.Screen name="Produits: Electroniques" component={ElectronicsScreen} />
-    <Stack.Screen name="Produits: Livres" component={BooksScreen} />
+    <Stack.Screen name="Produits: Électroniques" component={ElectronicsScreen} />
   </Stack.Navigator>
 );
 
+//app maitre (ne pas toucher au <Text></Text> bug si on raccourcis l'espace creer. pourquoi ? no sé.)
 export const Login = () => {
 
-  return(
-    <View>
-      <Text>                                                                                                                                                                             </Text>
-      <NavigationContainer><StatusBar style="auto" />
+  return (
+    <NavigationContainer>
+      <View>
+        <Text>                                                                                                                                                                           </Text>
         <MainNavigator />
-      </NavigationContainer>
-    </View>
-)};
+      </View>
+    </NavigationContainer>
+  );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -194,16 +188,16 @@ const styles = StyleSheet.create({
         margin: 5,
         borderRadius: 5,
         shadowColor: '#000',
-        shadowOffset: {
+        shadowOffset: { //a verifier
           width: 0,
           height: 3,
         },
-        shadowOpacity: 0.29,
-        shadowRadius: 4.65,
+        shadowOpacity: 0.29, // a verfier
+        shadowRadius: 4.65, // a verfier
         elevation: 7,
       },
       pressableText: {
         color: 'white',
-        fontSize: 16,
+        fontSize: 18,
       },
   });
