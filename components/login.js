@@ -11,7 +11,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
  Import des Components 
 */
 import EntrepotsScreen from './entrepots'
-import ProduitsScreen from './panier'
+import {PanierScreen, ProduitsScreen,PanierContextProvider} from './panier'
+
 const ManageScreen = () => {}
 
 //database
@@ -79,8 +80,11 @@ const HomeScreen = ({ navigation }) => {
 };
 
 // menu bottom avec icons
-const TabsNavigator = () => (
+const TabsNavigator = () => {
+  const [panier1, setPanier1] = useState([]);
 
+  return (
+  <PanierContextProvider>
   <Tab.Navigator initialRouteName="Accueil">
     <Tab.Screen
       name="Accueil"
@@ -101,7 +105,7 @@ const TabsNavigator = () => (
         component={ProduitsScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
+            <Ionicons name="list-circle" size={36} color={focused ? 'green' : 'lightgrey'} />
           ),
         }}
       /> : <Tab.Screen
@@ -109,7 +113,21 @@ const TabsNavigator = () => (
         component={ManageScreen}
         options={{
           tabBarIcon: ({ focused }) => (
-            <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
+            <Ionicons name="settings" size={36} color={focused ? 'green' : 'lightgrey'} />
+          ),
+        }}
+      />
+    }
+    {
+      /**
+       * Si clientelle login, afficher produitsScreen
+       */ 
+      isClient && <Tab.Screen
+        name="Panier"
+        component={PanierScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <Ionicons name="cart" size={36} color={focused ? 'green' : 'lightgrey'} />
           ),
         }}
       />
@@ -136,7 +154,8 @@ const TabsNavigator = () => (
       }}
     />
   </Tab.Navigator>
-);
+  </PanierContextProvider>
+)};
 //navigation + appel à tabsNavigator (menu avec buttons + icons)
 const MainNavigator = () => (
   <Stack.Navigator>
