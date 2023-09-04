@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext, createContext } from 'react';
 import { StyleSheet, Text, View, Pressable, Modal } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -11,29 +11,32 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
  Import des Components 
 */
 import EntrepotsScreen from './entrepots'
-import {PanierScreen, ProduitsScreen,PanierContextProvider} from './panier'
+import {PanierScreen, ProduitsScreen, PanierContextProvider} from './panier'
 import {SimpleModal} from './modal';
-
-const ManageScreen = () => {}
-
+import { ManageScreen } from './pageAdmin';
 //database
 import { Database } from './database';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-//Todo: nous devons vérifier c'est qui l'utilisateur, est administrateur ou clientelle?
-var isClient = true;
+//Verification de l'user (qui et recuperationd de l'user pour partout)
+const UserContext = createContext(null);
 
 //titre qui se trouve en haut de l'app
-const storeTitle = "Electro +";
+const StoreTitle = () => {
+  const { selectedUser } = useContext(UserContext);
+  
+  return (
+    <View style={styles.containerTitle}>
+      <Text style={styles.title}>Electro+</Text>
+      {selectedUser && (
+        <Text style={styles.userNom}>ID: {selectedUser.nom}</Text>
+      )}
+    </View>
+  );
+};
 
-// pages produtis & à propos (pt creer fichier pour eux ?)
-const ElectronicsScreen = () => (
-  <View style={styles.container}>
-    <Text>Électroniques</Text>
-  </View>
-);
 
 const ContactUsScreen = () => (
   <View style={styles.container}>
@@ -47,7 +50,7 @@ const HomeScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]); // pour la db le useState.
   const [isModalVisible, setIsModalVisible] = useState(false);    //pour Modal
   const [chooseData, setChooseData] = useState();                 //pour Modal
-  const [selectedUser, setSelectedUser] = useState(null);         
+  const {selectedUser, setSelectedUser} = useContext(UserContext); // Pour recuperer le user avec useContext
   const db = new Database("users");
 
   const changeModalVisible = (bool) => {
@@ -60,8 +63,17 @@ const HomeScreen = ({ navigation }) => {
 
   // onPress button -> envoie dans page produit electroniques (pt creer fichier pour lui ?)
   const handleValidationElec = () => {
-    navigation.navigate('Produits: Électroniques');
-  };
+    if (selectedUser && selectedUser.admin) {
+      // l'utilisateur est un administrateur
+      // naviguer vers la page admin
+      navigation.navigate('Management');
+    } else {
+      // l'utilisateur n'est pas un administrateur
+      // naviguer vers la page client
+      navigation.navigate('Electroniques');
+    }
+  }
+  
 
   const handleUserSelected = (user) => {
     changeModalVisible(true);
@@ -83,7 +95,7 @@ const HomeScreen = ({ navigation }) => {
     // .then(() => db.execute("INSERT INTO users (id_user, nom, admin, mdp) VALUES ('06', 'Ashkel Zemiya', 0, 'Ashkel')"))
     .then(() => db.execute("SELECT * FROM users"))
     .then(resultSet => {
-      console.log("Result set:", resultSet);
+      console.log("Affichage de notre database :", resultSet);
       setUsers(resultSet.rows);
     })
     .catch(error => {
@@ -128,99 +140,102 @@ const HomeScreen = ({ navigation }) => {
 
 // menu bottom avec icons
 const TabsNavigator = () => {
+  const {selectedUser, setSelectedUser} = useContext(UserContext);
   const [panier1, setPanier1] = useState([]);
 
   return (
-  <PanierContextProvider>
-  <Tab.Navigator initialRouteName="Accueil">
-    <Tab.Screen
-      name="Accueil"
-      component={HomeScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <Ionicons name="ios-home" size={28} color={focused ? 'green' : 'lightgrey'} />
-        ),
-      }}
-    />
-    { 
-      /**
-       * Si clientelle login, afficher produitsScreen
-       * Si administrateur login, afficher manageScreen 
-       */
-      isClient ? <Tab.Screen
-        name="Electroniques"
-        component={ProduitsScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name="list-circle" size={36} color={focused ? 'green' : 'lightgrey'} />
-          ),
-        }}
-      /> : <Tab.Screen
-        name="Management"
-        component={ManageScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name="settings" size={36} color={focused ? 'green' : 'lightgrey'} />
-          ),
-        }}
-      />
-    }
-    {
-      /**
-       * Si clientelle login, afficher produitsScreen
-       */ 
-      isClient && <Tab.Screen
-        name="Panier"
-        component={PanierScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <Ionicons name="cart" size={36} color={focused ? 'green' : 'lightgrey'} />
-          ),
-        }}
-      />
-    }
-    {
-      // Afficher tous les entrepôts sur le map, il y a encore des travaux à faire.
-      <Tab.Screen
-        name="Entrepôt"
-        component={EntrepotsScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <MaterialCommunityIcons name="warehouse" size={36} color={focused ? 'green' : 'lightgrey'} />
-          ),
-        }}
-      />
-    }
-    <Tab.Screen
-      name="À propos"
-      component={ContactUsScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
-        ),
-      }}
-    />
-  </Tab.Navigator>
-  </PanierContextProvider>
-)};
+    <PanierContextProvider>
+      <Tab.Navigator initialRouteName="Accueil">
+        <Tab.Screen
+          name="Accueil"
+          component={HomeScreen}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <Ionicons name="ios-home" size={28} color={focused ? 'green' : 'lightgrey'} />
+            ),
+          }}
+        />
+
+        {selectedUser && (
+          <>
+            {selectedUser.admin ? (
+              <Tab.Screen
+                name="Management"
+                component={ManageScreen}
+                options={{
+                  tabBarIcon: ({ focused }) => (
+                    <Ionicons name="settings" size={36} color={focused ? 'green' : 'lightgrey'} />
+                  ),
+                }}
+              />
+            ) : (
+              <>
+                <Tab.Screen
+                  name="Electroniques"
+                  component={ProduitsScreen}
+                  options={{
+                    tabBarIcon: ({ focused }) => (
+                      <Ionicons name="list-circle" size={36} color={focused ? 'green' : 'lightgrey'} />
+                    ),
+                  }}
+                />
+                <Tab.Screen
+                  name="Panier"
+                  component={PanierScreen}
+                  options={{
+                    tabBarIcon: ({ focused }) => (
+                      <Ionicons name="cart" size={36} color={focused ? 'green' : 'lightgrey'} />
+                    ),
+                  }}
+                />
+              </>
+            )}
+            <Tab.Screen
+              name="Entrepôt"
+              component={EntrepotsScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <MaterialCommunityIcons name="warehouse" size={36} color={focused ? 'green' : 'lightgrey'} />
+                ),
+              }}
+            />
+            <Tab.Screen
+              name="À propos"
+              component={ContactUsScreen}
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
+                ),
+              }}
+            />
+          </>
+        )}
+      </Tab.Navigator>
+    </PanierContextProvider>
+  );
+};
+
 //navigation + appel à tabsNavigator (menu avec buttons + icons)
 const MainNavigator = () => (
   <Stack.Navigator>
-    <Stack.Screen name="Tabs" component={TabsNavigator} options={{headerTitle: storeTitle}} />
-    <Stack.Screen name="Produits: Électroniques" component={ElectronicsScreen} />
+    <Stack.Screen name="Tabs" component={TabsNavigator} options={{headerTitle: StoreTitle}} />
+    <Stack.Screen name="Management" component={ManageScreen} />
+    <Stack.Screen name="Produits: Électroniques" component={ProduitsScreen} />
   </Stack.Navigator>
 );
 
 //app maitre (ne pas toucher au <Text></Text> bug si on raccourcis l'espace creer. pourquoi ? no sé.)
 export const Login = () => {
-
+  const [selectedUser, setSelectedUser] = useState(null);     // prend user
   return (
-    <NavigationContainer>
-      <View>
-        <Text>                                                                                                                                                                           </Text>
-        <MainNavigator />
-      </View>
-    </NavigationContainer>
+    <UserContext.Provider value={{ selectedUser, setSelectedUser }}>
+      <NavigationContainer>
+        <View>
+          <Text>                                                                                                                                                                           </Text>
+          <MainNavigator />
+        </View>
+      </NavigationContainer>
+    </UserContext.Provider>
   );
 };
 
@@ -229,6 +244,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: '#F5FCFF',
     },
     buttonContainer: {
       flexDirection: 'row',
@@ -270,5 +286,29 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         fontSize: 20,
         fontWeight: 'bold'
+    },
+    containerTitle: {
+      flexDirection: 'row',
+      justifyContent: 'space-between', // cela séparera le titre et l'ID utilisateur
+      alignItems: 'center',
+      marginVertical: 20,
+      flex: 1,
+    },
+    title: {
+      fontSize: 30,
+      fontWeight: 'bold',
+      color: '#4a90e2',
+      textShadowColor: 'rgba(0, 0, 0, 0.1)',
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 5,
+      letterSpacing: 1.5,
+      textAlign: 'left', // positionné à gauche
+    },
+    userNom: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: 'gray',
+      textAlign: 'right', // positionné à droite
+      marginRight: 30,
     },
   });

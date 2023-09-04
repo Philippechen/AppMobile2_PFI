@@ -18,7 +18,7 @@ const SimpleModal = (props) => {
         if (password === selectedUser.mdp) {
             setPasswordFailed(false);
             props.changeModalVisible(bool);
-            props.setData('Continuer');
+            props.setData(`Bienvenue ${selectedUser.nom}`);
             props.handleValidationElec();
         } else {
             setPasswordFailed(true);
