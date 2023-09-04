@@ -13,10 +13,9 @@
  * S’il achète, affichez un écran final d’achat.
  */
 import { createContext, useContext, useState } from 'react';
-import { Text, StyleSheet, FlatList, View, Image, Button, Pressable } from 'react-native';
+import { Text, StyleSheet, FlatList, View, Image, Pressable, Alert, Button } from 'react-native';
 //import{ NavigationContainer } from '@react-navigation/native'; 
 import{ createNativeStackNavigator } from '@react-navigation/native-stack';
-//import Constants from 'expo-constants';
 
 /**
  * Todo: Pour développer seulement, on doit lire des produits par BD 
@@ -28,7 +27,7 @@ const stack = createNativeStackNavigator();
 /**  Pour partager les données */
 const PanierContext = createContext();
 export const PanierContextProvider = ({ children }) => {
-  const [paniersTous, setPaniersTous] = useState('');
+  const [paniersTous, setPaniersTous] = useState([{}]);
 
   return (
     <PanierContext.Provider value={{ paniersTous, setPaniersTous }}>
@@ -72,8 +71,13 @@ const DetailScreenPage = ({navigation, route}) => {
           if (pasExiste) {
             setPaniersTous([...paniersTous,{id:id, nom:nom, prix:prix, image:image, nbr:1}]);
           }
-          console.log(paniersTous);
-          alert('done');
+          
+          Alert.alert('Confirmation', 'Ajouté avec succès', [
+            {
+              text:'Oui',
+              onPress:()=>navigation.goBack()
+            }
+          ])
         }}
        >
         <Text style={{color:"white", fontSize: 20}}>Ajout au panier</Text>
@@ -139,16 +143,37 @@ function ProduitsScreen({navigation}) {
 }
 
 /**
- * Produit cards, y compris image, nom, prix et numéro de produits qu'on ajoute au panier
+ * Afficher Produit cards, 
+ * y compris image, nom, prix et numéro de produits qu'on ajoute au panier
+ * 
  * @param {*} param0 
  * @returns 
  */
-const ProduitPanier = ({nom, prix, image, nbr}) => {
-  //console.log(image);
-  /* Todo: 
-  * Afficher : quantités, prix, prix total
-  * Bouton : Supprimer, Supprimer Tous, Acheter et retourner à la liste de produits
-  */
+const ProduitPanier = ({id, nom, prix, image, nbr}) => {
+  const { paniersTous, setPaniersTous } = useMyContext();
+
+  if (typeof(id) == "undefined") 
+    return;
+  
+  const delProduit = () => {
+    let nouvauPanier = [];
+    paniersTous.forEach(item=>{
+      if (item.id != id) nouvauPanier.push(item);
+    })
+    setPaniersTous(nouvauPanier)
+  }
+  const changeNbrProduit = (nb) => {
+    let nouvauPanier = [];
+    paniersTous.forEach(item=>{
+      if (item.id == id) item.nbr += nb;
+      if (item.nbr <= 0) {
+        delProduit();
+        return;
+      }
+      nouvauPanier.push(item);
+    })
+    setPaniersTous(nouvauPanier)
+  }
   return (
     <View style={styles.panier}>
       <Image source={{uri:image}} style={styles.image}/>
@@ -156,8 +181,28 @@ const ProduitPanier = ({nom, prix, image, nbr}) => {
       <View style={styles.panierEnonce}>
         <Text style={styles.panierTitre}> {nom} </Text>
         <Text style={styles.panierText}> Prix: {prix} </Text>
-        <Text style={styles.panierText}> nbr: {nbr} </Text>
-        <Pressable style={styles.panierSupprimer} >
+
+        <View style={styles.panierNbr}>
+          <Button style={styles.panierNbrBtn} onPress={()=>{changeNbrProduit(-1)}} title="-"/>
+            <Text style={styles.panierNbrText}> {nbr} </Text>
+          <Button style={styles.panierNbrBtn} onPress={()=>{changeNbrProduit(1)}} title="+"/>
+        </View>
+        
+        <Pressable style={styles.panierSupprimer} 
+          onPress={()=>{
+            Alert.alert('Confirmation', 'Voulez vous supprimer ce produit?', [
+              {
+                text:'Oui',
+                onPress:()=>{delProduit()}
+              },
+              {
+                text: 'Non',
+                onPress:()=>{},
+                style: 'cancel'
+              }
+            ])
+          }}
+        >
             <Text style={{color:"white", fontSize: 20}}>Supprimer</Text>
         </Pressable>
       </View>
@@ -165,34 +210,53 @@ const ProduitPanier = ({nom, prix, image, nbr}) => {
     );
 }
 /**
- * Component à exporter 
+ * Afficher:
+ *  1. tous les produits qu'on a ajouté
+ *  2. Prix total pour
+ *  3. Un bouton pour Supprimer tous les produits
+ *  4. Un bouton pour acheter tous les produits, si on le presser, afficher un écran final d'achat
  * @param {*} param0 
  * @returns 
  */
-const PanierScreen = ({navigation}) => {
+const PanierScreenPage = ({navigation}) => {
   const { paniersTous, setPaniersTous } = useMyContext();
+  let prixTous = 0;
   
-  console.log(1)
-  console.log(paniersTous);
-  console.log(11)
+  paniersTous.forEach(it =>{
+    if (typeof(it.prix) != "undefined") 
+      prixTous+=it.prix*it.nbr;
+  });
   return (
     <View style={styles.panierScreen}>
       <FlatList  
         data={paniersTous} 
-        renderItem={({item})=><ProduitPanier nom={item.nom} prix={item.prix} image={item.image} nbr={item.nbr} />} 
+        renderItem={({item})=><ProduitPanier id={item.id} nom={item.nom} prix={item.prix} image={item.image} nbr={item.nbr} />}
         keyExtractor={item=>item.id} 
-        />
+      />
         
-        
+      <Text style={{fontWeight:'bold', fontSize:20}} >Prix Total: {prixTous.toFixed(2)}</Text>
       <Pressable 
         style={[styles.panierBtn, {backgroundColor: 'red'}]}
+        onPress={()=>{
+          Alert.alert('Confirmation', 'Voulez vous valider le panier?', [
+            {
+              text:'Oui',
+              onPress:()=>{setPaniersTous([])}
+            },
+            {
+              text: 'Non',
+              onPress:()=>{},
+              style: 'cancel'
+            }
+          ])
+        }}
         >
         <Text style={{color:"white", fontSize: 20}}>Supprimer Tous</Text>
       </Pressable>
 
       <Pressable 
         style={[styles.panierBtn, {backgroundColor: 'green'}]}
-        onPress={()=>{alert('Merci !')}}
+        onPress={()=>{navigation.navigate("Achat",{'prix':prixTous.toFixed(2)});setPaniersTous([])}}
         >
         <Text style={{color:"white", fontSize: 20}}>Acheter</Text>
       </Pressable>
@@ -200,6 +264,28 @@ const PanierScreen = ({navigation}) => {
   );
 }
 
+
+const AchatScreenPage = ({navigation, route}) => {
+  const prix = route.params.prix;
+  return (
+  <View style={styles.produit}>
+    <Text style={styles.panierTitre}>Merci pour votre achat. </Text>
+    <Text>Votre command de {prix} a bien été confirmé</Text>
+  </View>
+)}
+/**
+ * Component à exporter 
+ * @param {*} param0 
+ * @returns 
+ */
+function PanierScreen({navigation}) {
+  return (
+    <stack.Navigator>
+      <stack.Screen name='Panier' component={PanierScreenPage} options={{title:""}}/>
+      <stack.Screen name='Achat' component={AchatScreenPage} options={{title:"Confirmation d'achat"}}/>
+    </stack.Navigator>
+  )
+}
 export {PanierScreen, ProduitsScreen};
 
 const styles = StyleSheet.create({
@@ -219,11 +305,29 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     borderBottomColor: '#DDD',
     borderBottomWidth: 1,
-    height: 110
+    height: 130
   },
   panierBtn:{
     margin:5,
     height: 40
+  },
+  panierNbrBtn:{
+    width:20,
+    height:20,
+    borderWidth:1,
+    margin:5,
+    backgroundColor:'red'
+  },
+  panierNbr: {
+    flexDirection: "row",
+    justifyContent: 'flex-start',
+    borderWidth:1,
+    height: 40
+  },
+  panierNbrText: {
+    fontSize: 20,
+    borderWidth:1,
+    width:30
   },
   panier: {
     flexDirection: "row",
@@ -233,7 +337,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 5,
     borderWidth:1,
-    height: 110
+    height: 130
   },
   panierEnonce: {
     flexDirection: "colomn",
@@ -242,7 +346,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     alignItems: 'left',
     paddingTop: 5,
-    height: 110
+    height: 130
   },
   panierTitre: {
     fontSize: 20,
@@ -291,8 +395,8 @@ const styles = StyleSheet.create({
     paddingRight: 10
   },
   image: {
-    width: 110,
-    height: 110,
+    width: 130,
+    height: 130,
     paddingRight: 10
   },
   titre: {
