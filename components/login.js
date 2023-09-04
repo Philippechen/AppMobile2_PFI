@@ -23,20 +23,26 @@ const Stack = createNativeStackNavigator();
 //Verification de l'user (qui et recuperationd de l'user pour partout)
 const UserContext = createContext(null);
 
-//titre qui se trouve en haut de l'app
+//titre qui se trouve en haut de l'app + id à droite + logout
 const StoreTitle = () => {
-  const { selectedUser } = useContext(UserContext);
+  const { selectedUser, setSelectedUser } = useContext(UserContext);
   
   return (
     <View style={styles.containerTitle}>
       <Text style={styles.title}>Electro+</Text>
       {selectedUser && (
-        <Text style={styles.userNom}>ID: {selectedUser.nom}</Text>
+        <View>
+          <Text style={styles.userNom}>ID: {selectedUser.nom}</Text>
+          <Text 
+            onPress={() => setSelectedUser(null)}
+            style={{ color: 'rgba(70, 130, 240, 0.7)', textDecorationLine: 'underline' }}>
+            Déconnexion
+          </Text>
+        </View>
       )}
     </View>
   );
 };
-
 
 const ContactUsScreen = () => (
   <View style={styles.container}>
@@ -51,6 +57,8 @@ const HomeScreen = ({ navigation }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);    //pour Modal
   const [chooseData, setChooseData] = useState();                 //pour Modal
   const {selectedUser, setSelectedUser} = useContext(UserContext); // Pour recuperer le user avec useContext
+  const [tempSelectedUser, setTempSelectedUser] = useState(null); // pour recuperer le user mais de maniere temporaire avant qu'il ne s'identifie
+
   const db = new Database("users");
 
   const changeModalVisible = (bool) => {
@@ -61,24 +69,15 @@ const HomeScreen = ({ navigation }) => {
     setChooseData(data);
   }
 
-  // onPress button -> envoie dans page produit electroniques (pt creer fichier pour lui ?)
-  const handleValidationElec = () => {
-    if (selectedUser && selectedUser.admin) {
-      // l'utilisateur est un administrateur
-      // naviguer vers la page admin
-      navigation.navigate('Management');
-    } else {
-      // l'utilisateur n'est pas un administrateur
-      // naviguer vers la page client
-      navigation.navigate('Electroniques');
-    }
-  }
-  
-
   const handleUserSelected = (user) => {
     changeModalVisible(true);
-    setSelectedUser(user); // Mettre à jour l'état avec l'utilisateur sélectionné
+    setTempSelectedUser(user);
   }
+
+  const handleUserLogin = (user) => {
+    setSelectedUser(user);
+  }
+  
 
   // Récupérer les données des utilisateurs depuis la base de données pour les afficher à l'écran
   useEffect(() => {
@@ -130,8 +129,8 @@ const HomeScreen = ({ navigation }) => {
         <SimpleModal 
           changeModalVisible={changeModalVisible}
           setData={setData}
-          selectedUser={selectedUser}
-          handleValidationElec={handleValidationElec}
+          selectedUser={tempSelectedUser}
+          handleUserLogin={handleUserLogin}
         />
       </Modal>
     </View>
@@ -171,7 +170,7 @@ const TabsNavigator = () => {
             ) : (
               <>
                 <Tab.Screen
-                  name="Electroniques"
+                  name="Électroniques"
                   component={ProduitsScreen}
                   options={{
                     tabBarIcon: ({ focused }) => (

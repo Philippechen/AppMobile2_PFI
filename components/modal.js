@@ -14,12 +14,17 @@ const SimpleModal = (props) => {
     const [passwordFailed, setPasswordFailed] = useState(false);
 
     closeModal = (bool, data) => {
+        if (data === 'Vous avez annulé') {
+            props.changeModalVisible(bool);
+            props.setData(data);
+            return;
+        }
         
         if (password === selectedUser.mdp) {
             setPasswordFailed(false);
             props.changeModalVisible(bool);
             props.setData(`Bienvenue ${selectedUser.nom}`);
-            props.handleValidationElec();
+            props.handleUserLogin(selectedUser);
         } else {
             setPasswordFailed(true);
             props.changeModalVisible(bool);
