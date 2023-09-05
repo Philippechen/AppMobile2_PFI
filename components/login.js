@@ -13,7 +13,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import EntrepotsScreen from './entrepots'
 import {PanierScreen, ProduitsScreen, PanierContextProvider} from './panier'
 import {SimpleModal} from './modal';
-import { ManageScreen } from './pageAdmin';
+import {ManageScreen} from './pageAdmin';
+import { ContactUsScreen } from './contactUs';
 //database
 import { Database } from './database';
 
@@ -43,12 +44,6 @@ const StoreTitle = () => {
     </View>
   );
 };
-
-const ContactUsScreen = () => (
-  <View style={styles.container}>
-    <Text>À propos</Text>
-  </View>
-);
 
 // page homeScreen (pt creer fichier pour lui ?)
 const HomeScreen = ({ navigation }) => {
@@ -92,7 +87,8 @@ const HomeScreen = ({ navigation }) => {
     // .then(() => db.execute("INSERT INTO users (id_user, nom, admin, mdp) VALUES ('04', 'Liev Newman', 0, 'Liev')"))
     // .then(() => db.execute("INSERT INTO users (id_user, nom, admin, mdp) VALUES ('05', 'Elizaveta Titova', 0, 'Elizaveta')"))
     // .then(() => db.execute("INSERT INTO users (id_user, nom, admin, mdp) VALUES ('06', 'Ashkel Zemiya', 0, 'Ashkel')"))
-    .then(() => db.execute("SELECT * FROM users"))
+    //.then(() => db.execute("SELECT * FROM users"))
+    db.execute("SELECT * FROM users")
     .then(resultSet => {
       console.log("Affichage de notre database :", resultSet);
       setUsers(resultSet.rows);
@@ -218,8 +214,6 @@ const TabsNavigator = () => {
 const MainNavigator = () => (
   <Stack.Navigator>
     <Stack.Screen name="Tabs" component={TabsNavigator} options={{headerTitle: StoreTitle}} />
-    <Stack.Screen name="Management" component={ManageScreen} />
-    <Stack.Screen name="Produits: Électroniques" component={ProduitsScreen} />
   </Stack.Navigator>
 );
 
@@ -269,12 +263,6 @@ const styles = StyleSheet.create({
         margin: 5,
         borderRadius: 5,
         shadowColor: '#000',
-        shadowOffset: { //a verifier
-          width: 0,
-          height: 3,
-        },
-        shadowOpacity: 0.29, // a verfier
-        shadowRadius: 4.65, // a verfier
         elevation: 7,
       },
       pressableText: {
@@ -288,7 +276,7 @@ const styles = StyleSheet.create({
     },
     containerTitle: {
       flexDirection: 'row',
-      justifyContent: 'space-between', // cela séparera le titre et l'ID utilisateur
+      justifyContent: 'space-between',
       alignItems: 'center',
       marginVertical: 20,
       flex: 1,
@@ -301,13 +289,13 @@ const styles = StyleSheet.create({
       textShadowOffset: { width: 1, height: 1 },
       textShadowRadius: 5,
       letterSpacing: 1.5,
-      textAlign: 'left', // positionné à gauche
+      textAlign: 'left',
     },
     userNom: {
       fontSize: 14,
       fontWeight: '500',
       color: 'gray',
-      textAlign: 'right', // positionné à droite
+      textAlign: 'right',
       marginRight: 30,
     },
   });
