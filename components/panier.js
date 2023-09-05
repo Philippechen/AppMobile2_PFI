@@ -12,22 +12,49 @@
  * Le client peut alors enlever un item, vider le panier, retourner à la liste de produits ou acheter. 
  * S’il achète, affichez un écran final d’achat.
  */
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import { Text, StyleSheet, FlatList, View, Image, Pressable, Alert, Button } from 'react-native';
-//import{ NavigationContainer } from '@react-navigation/native'; 
 import{ createNativeStackNavigator } from '@react-navigation/native-stack';
-
-/**
- * Todo: Pour développer seulement, on doit lire des produits par BD 
- */
-import produits from "../assets/produits.json";
+import { Database } from './database';   
 
 const stack = createNativeStackNavigator();
+const db = new Database("produits");     //Utiliser la même BD
 
-/**  Pour partager les données */
+/**
+ * Initialize BD pour tous les produits, executer une seule fois
+ */
+export const initProduitsBD = () => {
+  db.execute("DROP TABLE IF EXISTS produits");  // Supprime la table si elle existe
+  db.execute("CREATE TABLE IF NOT EXISTS produits (id TEXT PRIMARY KEY, nom TEXT, description TEXT, prix REAL, image TEXT);")
+    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('01', 'Dell Inspiron 16 Laptop','', 949.98, 'https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg')"))
+    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('02', 'Ipad air 10th','', 599.98, 'https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg')"))
+    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('03', 'Xbox series X','', 1099.98, 'https://i.cbc.ca/1.3704325.1470158500!/fileImage/httpImage/xbox-one-s-photo-01.jpg')"))
+    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('04', 'Iphone 14 pro','', 1699.98, 'https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg')"))
+  .catch(error => {
+    console.error("An error occurred:", error);
+  });
+} 
+/**
+ * Obtenir tous les produits par sqlite
+ * 
+ * @param {*} setProduits est une function qui décide comment utiliser les données de produits 
+ * @returns 
+ */
+export const obtenirProduits = (setProduits) => {
+  db.execute("SELECT * FROM produits")
+  .then(resultSet => {
+    console.log("Affichage de notre database :", resultSet);
+    setProduits(resultSet.rows);
+  })
+  .catch(error => {
+    console.error("An error occurred:", error);
+  });
+}
+
+/**  Pour partager les données entre différent écran*/
 const PanierContext = createContext();
 export const PanierContextProvider = ({ children }) => {
-  const [paniersTous, setPaniersTous] = useState([{}]);
+  const [paniersTous, setPaniersTous] = useState([]);
 
   return (
     <PanierContext.Provider value={{ paniersTous, setPaniersTous }}>
@@ -87,7 +114,7 @@ const DetailScreenPage = ({navigation, route}) => {
 }
 
 /**
- * Décrire brièvement un produit avec Image
+ * Component pour décrire brièvement un produit avec image
  * On peut le presser pour l'information plus détaillée
  * 
  * @param {*} param0 
@@ -118,6 +145,11 @@ const Produit = ({navigation, item}) => {
  * @returns 
  */
 const ProduitsScreenPage = ({navigation}) => {
+  const [produits, setProduits] = useState([]);
+  useEffect(() => {
+    obtenirProduits(setProduits);
+  }, []);
+
   return (
     <View>
       <FlatList  
@@ -129,11 +161,14 @@ const ProduitsScreenPage = ({navigation}) => {
   );
 }
 /**
- * Component à exporter 
+ * Component à exporter qui a 2 page:
+ *    * un pour liste tous les produis
+ *    * un pour donner plus d'information sur un seul produit
+ * 
  * @param {*} param0 
  * @returns 
  */
-function ProduitsScreen({navigation}) {
+export function ProduitsScreen({navigation}) {
   return (
     <stack.Navigator>
       <stack.Screen name='ProduitList' component={ProduitsScreenPage} />
@@ -256,7 +291,7 @@ const PanierScreenPage = ({navigation}) => {
 
       <Pressable 
         style={[styles.panierBtn, {backgroundColor: 'green'}]}
-        onPress={()=>{navigation.navigate("Achat",{'prix':prixTous.toFixed(2)});setPaniersTous([])}}
+        onPress={()=>{navigation.navigate("AchatPage",{'prix':prixTous.toFixed(2)});setPaniersTous([])}}
         >
         <Text style={{color:"white", fontSize: 20}}>Acheter</Text>
       </Pressable>
@@ -274,19 +309,21 @@ const AchatScreenPage = ({navigation, route}) => {
   </View>
 )}
 /**
- * Component à exporter 
+ * Component à exporter qui a 2 page:
+ *    * un pour liste tous les produis dans le panier
+ *    * un pour confirmer la demande
+ * 
  * @param {*} param0 
  * @returns 
  */
-function PanierScreen({navigation}) {
+export function PanierScreen({navigation}) {
   return (
     <stack.Navigator>
-      <stack.Screen name='Panier' component={PanierScreenPage} options={{title:""}}/>
-      <stack.Screen name='Achat' component={AchatScreenPage} options={{title:"Confirmation d'achat"}}/>
+      <stack.Screen name='PanierPage' component={PanierScreenPage} options={{title:""}}/>
+      <stack.Screen name='AchatPage' component={AchatScreenPage} options={{title:"Confirmation d'achat"}}/>
     </stack.Navigator>
   )
 }
-export {PanierScreen, ProduitsScreen};
 
 const styles = StyleSheet.create({
   produit: {

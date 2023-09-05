@@ -1,6 +1,0 @@
- [
-    {"id": 1, "nom": "Dell Inspiron 16 Laptop", "description":"Blabla bla xxx ddd aaa cc", "prix":111.2, "image":"https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg"},
-    {"id": 2, "nom": "Ipad air 10th", "description":"Blabla", "prix":222.2, "image":"https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg"},
-    {"id": 4, "nom": "Xbox series X", "description":"Blabla", "prix":333.2, "image":"https://i.cbc.ca/1.3704325.1470158500!/fileImage/httpImage/xbox-one-s-photo-01.jpg"},
-    {"id": 3, "nom": "Iphone 20 pro", "description":"Blabla", "prix":333.2,  "image":"https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg"}
- ]

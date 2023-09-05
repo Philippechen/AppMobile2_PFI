@@ -11,7 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
  Import des Components 
 */
 import EntrepotsScreen from './entrepots'
-import {PanierScreen, ProduitsScreen, PanierContextProvider} from './panier'
+import {initProduitsBD, PanierScreen, ProduitsScreen, PanierContextProvider} from './panier'
 import {SimpleModal} from './modal';
 import { ManageScreen } from './pageAdmin';
 //database
@@ -79,8 +79,10 @@ const HomeScreen = ({ navigation }) => {
   }
   
 
+
   // Récupérer les données des utilisateurs depuis la base de données pour les afficher à l'écran
   useEffect(() => {
+    initProduitsBD();
   //db.execute("DROP TABLE IF EXISTS users")  // Supprime la table si elle existe
   //.then(() => db.execute("CREATE TABLE IF NOT EXISTS users (id_user TEXT PRIMARY KEY, nom TEXT, admin BOOLEAN, mdp TEXT)"))
   db.execute("CREATE TABLE IF NOT EXISTS users (id_user TEXT PRIMARY KEY, nom TEXT, admin BOOLEAN, mdp TEXT);")
