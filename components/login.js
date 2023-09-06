@@ -73,8 +73,6 @@ const HomeScreen = ({ navigation }) => {
     setSelectedUser(user);
   }
   
-
-
   // Récupérer les données des utilisateurs depuis la base de données pour les afficher à l'écran
   useEffect(() => {
     initProduitsBD();
