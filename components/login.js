@@ -18,15 +18,24 @@ import { ContactUsScreen } from './contactUs';
 //database
 import { Database } from './database';
 
+// internationalisation et localisation
+import * as Localization from 'expo-localization';
+import {I18n} from 'i18n-js';
+import translations from '../assets/traduction';
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 //Verification de l'user (qui et recuperationd de l'user pour partout)
 const UserContext = createContext(null);
 
+//localisation
+const i18n = new I18n(translations);
+i18n.defaultLocale = 'fr';
+
 //titre qui se trouve en haut de l'app + id à droite + logout
 const StoreTitle = () => {
-  const { selectedUser, setSelectedUser } = useContext(UserContext);
+  const { selectedUser, setSelectedUser, lang, setLang } = useContext(UserContext);
   
   return (
     <View style={styles.containerTitle}>
@@ -51,10 +60,13 @@ const HomeScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]); // pour la db le useState.
   const [isModalVisible, setIsModalVisible] = useState(false);    //pour Modal
   const [chooseData, setChooseData] = useState();                 //pour Modal
-  const {selectedUser, setSelectedUser} = useContext(UserContext); // Pour recuperer le user avec useContext
+  const {selectedUser, setSelectedUser, lang, setLang} = useContext(UserContext); // Pour recuperer le user avec useContext
   const [tempSelectedUser, setTempSelectedUser] = useState(null); // pour recuperer le user mais de maniere temporaire avant qu'il ne s'identifie
 
   const db = new Database("users");
+
+  //localisation 
+  i18n.locale = lang;
 
   const changeModalVisible = (bool) => {
     setIsModalVisible(bool);
@@ -116,6 +128,16 @@ const HomeScreen = ({ navigation }) => {
           </Text>
         </Pressable>
       ))}
+
+      <Pressable 
+        style={styles.pressableLang}
+        onPress={() =>  { i18n.t('lang') == 'fr' ? setLang('en'): setLang('fr');
+        }}>
+        <Text style={styles.pressableText}>
+          {i18n.t('lang')}
+        </Text>
+      </Pressable>
+
       <Modal
         transparent={true}
         animationType="fade"
@@ -127,6 +149,7 @@ const HomeScreen = ({ navigation }) => {
           setData={setData}
           selectedUser={tempSelectedUser}
           handleUserLogin={handleUserLogin}
+          i18n={i18n}
         />
       </Modal>
     </View>
@@ -135,14 +158,17 @@ const HomeScreen = ({ navigation }) => {
 
 // menu bottom avec icons
 const TabsNavigator = () => {
-  const {selectedUser, setSelectedUser} = useContext(UserContext);
+  const {selectedUser, setSelectedUser, lang, setLang} = useContext(UserContext);
   const [panier1, setPanier1] = useState([]);
+
+  //localisation 
+  i18n.locale = lang;
 
   return (
     <PanierContextProvider>
-      <Tab.Navigator initialRouteName="Accueil">
+      <Tab.Navigator initialRouteName={i18n.t('acceuil')}>
         <Tab.Screen
-          name="Accueil"
+          name={i18n.t('acceuil')}
           component={HomeScreen}
           options={{
             tabBarIcon: ({ focused }) => (
@@ -166,7 +192,7 @@ const TabsNavigator = () => {
             ) : (
               <>
                 <Tab.Screen
-                  name="Électroniques"
+                  name={i18n.t('electroniques')}
                   component={ProduitsScreen}
                   options={{
                     tabBarIcon: ({ focused }) => (
@@ -175,7 +201,7 @@ const TabsNavigator = () => {
                   }}
                 />
                 <Tab.Screen
-                  name="Panier"
+                  name={i18n.t('panier')}
                   component={PanierScreen}
                   options={{
                     tabBarIcon: ({ focused }) => (
@@ -186,7 +212,7 @@ const TabsNavigator = () => {
               </>
             )}
             <Tab.Screen
-              name="Entrepôt"
+              name={i18n.t('entrepot')}
               component={EntrepotsScreen}
               options={{
                 tabBarIcon: ({ focused }) => (
@@ -195,7 +221,7 @@ const TabsNavigator = () => {
               }}
             />
             <Tab.Screen
-              name="À propos"
+              name={i18n.t('apropos')}
               component={ContactUsScreen}
               options={{
                 tabBarIcon: ({ focused }) => (
@@ -220,8 +246,9 @@ const MainNavigator = () => (
 //app maitre (ne pas toucher au <Text></Text> bug si on raccourcis l'espace creer. pourquoi ? no sé.)
 export const Login = () => {
   const [selectedUser, setSelectedUser] = useState(null);     // prend user
+  const [lang, setLang] = useState('fr');
   return (
-    <UserContext.Provider value={{ selectedUser, setSelectedUser }}>
+    <UserContext.Provider value={{ selectedUser, setSelectedUser, lang, setLang }}>
       <NavigationContainer>
         <View>
           <Text>                                                                                                                                                                           </Text>
@@ -256,6 +283,16 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center'
     },
+    pressableLang: {
+        backgroundColor: 'blue', // Vert
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        margin: 5,
+        marginTop: 20,
+        borderRadius: 5,
+        shadowColor: '#000',
+        elevation: 7,
+      },
     pressable: {
         backgroundColor: '#4CAF50', // Vert
         paddingVertical: 10,
