@@ -1,6 +1,10 @@
 import { StyleSheet, Text, View, Linking } from 'react-native';
 
 const ContactUsScreen = () => {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
+  const myI18n = route.params.i18n;
+  setI18n(myI18n);
+
     const handleOpenURL = () => {
         Linking.openURL('https://github.com/Philippechen/AppMobile2_PFI.git');
     };

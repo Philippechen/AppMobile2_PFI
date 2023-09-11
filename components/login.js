@@ -46,7 +46,7 @@ const StoreTitle = () => {
           <Text 
             onPress={() => setSelectedUser(null)}
             style={{ color: 'rgba(70, 130, 240, 0.7)', textDecorationLine: 'underline' }}>
-            Déconnexion
+            {i18n.t('deconnection')}
           </Text>
         </View>
       )}
@@ -199,6 +199,7 @@ const TabsNavigator = () => {
                       <Ionicons name="list-circle" size={36} color={focused ? 'green' : 'lightgrey'} />
                     ),
                   }}
+                  initialParams={{i18n:i18n}}
                 />
                 <Tab.Screen
                   name={i18n.t('panier')}
@@ -208,6 +209,7 @@ const TabsNavigator = () => {
                       <Ionicons name="cart" size={36} color={focused ? 'green' : 'lightgrey'} />
                     ),
                   }}
+                  initialParams={{i18n:i18n}}
                 />
               </>
             )}
@@ -228,6 +230,7 @@ const TabsNavigator = () => {
                   <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
                 ),
               }}
+              initialParams={{i18n:i18n}}
             />
           </>
         )}

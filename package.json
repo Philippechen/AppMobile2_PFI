@@ -17,6 +17,7 @@
     "expo-sqlite": "~11.3.3",
     "expo-status-bar": "~1.6.0",
     "i18n-js": "^4.3.0",
+    "intl": "^1.2.5",
     "make-plural": "^7.3.0",
     "react": "18.2.0",
     "react-confirm-alert": "^3.0.6",

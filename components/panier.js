@@ -15,7 +15,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { Text, StyleSheet, FlatList, View, Image, Pressable, Alert, Button } from 'react-native';
 import{ createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Database } from './database';   
+import { Database } from './database';
 
 const stack = createNativeStackNavigator();
 const db = new Database("produits");     //Utiliser la même BD
@@ -24,12 +24,12 @@ const db = new Database("produits");     //Utiliser la même BD
  * Initialize BD pour tous les produits, executer une seule fois
  */
 export const initProduitsBD = () => {
-  // db.execute("DROP TABLE IF EXISTS produits");  // Supprime la table si elle existe
-  // db.execute("CREATE TABLE IF NOT EXISTS produits (id TEXT PRIMARY KEY, nom TEXT, description TEXT, prix REAL, image TEXT);")
-  //   .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('01', 'Dell Inspiron 16 Laptop','', 949.98, 'https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg')"))
-  //   .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('02', 'Ipad air 10th','', 599.98, 'https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg')"))
-  //   .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('03', 'Xbox series X','', 1099.98, 'https://i.cbc.ca/1.3704325.1470158500!/fileImage/httpImage/xbox-one-s-photo-01.jpg')"))
-  //   .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('04', 'Iphone 14 pro','', 1699.98, 'https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg')"))
+  //  db.execute("DROP TABLE IF EXISTS produits");  // Supprime la table si elle existe
+  //  db.execute("CREATE TABLE IF NOT EXISTS produits (id TEXT PRIMARY KEY, nom TEXT, description TEXT, prix REAL, image TEXT);")
+  //    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('01', 'Dell Inspiron 16 Laptop','Nouvelle ordinateur', 949.98, 'https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg')"))
+  //    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('02', 'Ipad air 10th','Nouveau Ipad', 599.98, 'https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg')"))
+  //    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('03', 'Xbox series X','xbox Series', 1099.98, 'https://i.cbc.ca/1.3704325.1470158500!/fileImage/httpImage/xbox-one-s-photo-01.jpg')"))
+  //    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('04', 'Iphone 14 pro','Iphone pro', 1699.98, 'https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg')"))
     db.execute("SELECT * FROM produits")
     .catch(error => {
     console.error("An error occurred:", error);
@@ -56,9 +56,10 @@ export const obtenirProduits = (setProduits) => {
 const PanierContext = createContext();
 export const PanierContextProvider = ({ children }) => {
   const [paniersTous, setPaniersTous] = useState([]);
+  const [i18n, setI18n] = useState();
 
   return (
-    <PanierContext.Provider value={{ paniersTous, setPaniersTous }}>
+    <PanierContext.Provider value={{ paniersTous, setPaniersTous, i18n, setI18n }}>
       {children}
     </PanierContext.Provider>
   );
@@ -74,14 +75,18 @@ export const useMyContext = () => useContext(PanierContext);
  * @returns 
  */
 const DetailScreenPage = ({navigation, route}) => {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
   const {id, nom, prix, description,image} = route.params.item;
-  const { paniersTous, setPaniersTous } = useMyContext();
+
+  if (typeof(i18n) == 'undefined')
+    return (<View></View>);
+
   return (
     <View style={styles.detail}>
       <Image source={{uri:image}} style={styles.imageDetail}/>
       <Text style={styles.titreDetail}> {nom} </Text>
       <View style={{alignItems: 'left', paddingTop:20}}>
-        <Text > Prix: {prix} </Text>
+        <Text > {i18n.t('prix')}: {prix} </Text>
         <Text > Description:{description} </Text>
       </View>
  
@@ -100,15 +105,15 @@ const DetailScreenPage = ({navigation, route}) => {
             setPaniersTous([...paniersTous,{id:id, nom:nom, prix:prix, image:image, nbr:1}]);
           }
           
-          Alert.alert('Confirmation', 'Ajouté avec succès', [
+          Alert.alert('Confirmation', i18n.t('ajoutSuc'), [
             {
-              text:'Oui',
+              text:i18n.t('oui'),
               onPress:()=>navigation.goBack()
             }
           ])
         }}
        >
-        <Text style={{color:"white", fontSize: 20}}>Ajout au panier</Text>
+        <Text style={{color:"white", fontSize: 20}}>{i18n.t('ajoutAuPanier')}</Text>
       </Pressable>
     </View>
   )
@@ -122,6 +127,7 @@ const DetailScreenPage = ({navigation, route}) => {
  * @returns 
  */
 const Produit = ({navigation, item}) => {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
   const {nom, prix, image} = item;
   return (
     <Pressable 
@@ -133,7 +139,7 @@ const Produit = ({navigation, item}) => {
         </View>
         <View>
           <Text styles={styles.nom}> {nom} </Text>
-          <Text styles={styles.nom}> Prix: {prix} </Text>
+          {/* <Text styles={styles.nom}> {i18n.t('prix')}: {prix} </Text> */}
         </View>
       </View>
     </Pressable>
@@ -169,7 +175,10 @@ const ProduitsScreenPage = ({navigation}) => {
  * @param {*} param0 
  * @returns 
  */
-export function ProduitsScreen({navigation}) {
+export function ProduitsScreen({navigation, route}) {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
+  const myI18n = route.params.i18n;
+  setI18n(myI18n);
   return (
     <stack.Navigator>
       <stack.Screen name='ProduitList' component={ProduitsScreenPage} />
@@ -185,8 +194,8 @@ export function ProduitsScreen({navigation}) {
  * @param {*} param0 
  * @returns 
  */
-const ProduitPanier = ({id, nom, prix, image, nbr}) => {
-  const { paniersTous, setPaniersTous } = useMyContext();
+const ProduitEnPanier = ({id, nom, prix, image, nbr}) => {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
 
   if (typeof(id) == "undefined") 
     return;
@@ -216,7 +225,7 @@ const ProduitPanier = ({id, nom, prix, image, nbr}) => {
 
       <View style={styles.panierEnonce}>
         <Text style={styles.panierTitre}> {nom} </Text>
-        <Text style={styles.panierText}> Prix: {prix} </Text>
+        <Text style={styles.panierText}> {i18n.t('prix')}: {prix} </Text>
 
         <View style={styles.panierNbr}>
           <Button style={styles.panierNbrBtn} onPress={()=>{changeNbrProduit(-1)}} title="-"/>
@@ -226,20 +235,20 @@ const ProduitPanier = ({id, nom, prix, image, nbr}) => {
         
         <Pressable style={styles.panierSupprimer} 
           onPress={()=>{
-            Alert.alert('Confirmation', 'Voulez vous supprimer ce produit?', [
+            Alert.alert('Confirmation', i18n.t('msgSupprime'), [
               {
-                text:'Oui',
+                text:i18n.t('oui'),
                 onPress:()=>{delProduit()}
               },
               {
-                text: 'Non',
+                text: i18n.t('non'),
                 onPress:()=>{},
                 style: 'cancel'
               }
             ])
           }}
         >
-            <Text style={{color:"white", fontSize: 20}}>Supprimer</Text>
+            <Text style={{color:"white", fontSize: 20}}>{i18n.t('supprimer')}</Text>
         </Pressable>
       </View>
     </View>
@@ -254,10 +263,13 @@ const ProduitPanier = ({id, nom, prix, image, nbr}) => {
  * @param {*} param0 
  * @returns 
  */
-const PanierScreenPage = ({navigation}) => {
-  const { paniersTous, setPaniersTous } = useMyContext();
+const PanierScreenPage = ({navigation, route}) => {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
   let prixTous = 0;
-  
+
+  if (typeof(i18n) == 'undefined')
+    return (<View></View>);
+
   paniersTous.forEach(it =>{
     if (typeof(it.prix) != "undefined") 
       prixTous+=it.prix*it.nbr;
@@ -266,35 +278,35 @@ const PanierScreenPage = ({navigation}) => {
     <View style={styles.panierScreen}>
       <FlatList  
         data={paniersTous} 
-        renderItem={({item})=><ProduitPanier id={item.id} nom={item.nom} prix={item.prix} image={item.image} nbr={item.nbr} />}
+        renderItem={({item})=><ProduitEnPanier id={item.id} nom={item.nom} prix={item.prix} image={item.image} nbr={item.nbr} />}
         keyExtractor={item=>item.id} 
       />
         
-      <Text style={{fontWeight:'bold', fontSize:20}} >Prix Total: {prixTous.toFixed(2)}</Text>
+      <Text style={{fontWeight:'bold', fontSize:20}} >{i18n.t('prixTous')}: {prixTous.toFixed(2)}</Text>
       <Pressable 
         style={[styles.panierBtn, {backgroundColor: 'red'}]}
         onPress={()=>{
-          Alert.alert('Confirmation', 'Voulez vous valider le panier?', [
+          Alert.alert('Confirmation', i18n.t('msgViderPanier'), [
             {
-              text:'Oui',
+              text:i18n.t('oui'),
               onPress:()=>{setPaniersTous([])}
             },
             {
-              text: 'Non',
+              text: i18n.t('non'),
               onPress:()=>{},
               style: 'cancel'
             }
           ])
         }}
         >
-        <Text style={{color:"white", fontSize: 20}}>Supprimer Tous</Text>
+        <Text style={{color:"white", fontSize: 20}}>{i18n.t('viderPanier')}</Text>
       </Pressable>
 
       <Pressable 
         style={[styles.panierBtn, {backgroundColor: 'green'}]}
         onPress={()=>{navigation.navigate("AchatPage",{'prix':prixTous.toFixed(2)});setPaniersTous([])}}
         >
-        <Text style={{color:"white", fontSize: 20}}>Acheter</Text>
+        <Text style={{color:"white", fontSize: 20}}>{i18n.t('acheter')}</Text>
       </Pressable>
     </View>
   );
@@ -302,11 +314,12 @@ const PanierScreenPage = ({navigation}) => {
 
 
 const AchatScreenPage = ({navigation, route}) => {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
   const prix = route.params.prix;
   return (
   <View style={styles.produit}>
-    <Text style={styles.panierTitre}>Merci pour votre achat. </Text>
-    <Text>Votre command de {prix} a bien été confirmé</Text>
+    <Text style={styles.panierTitre}>{i18n.t('achatTitre')} </Text>
+    <Text>{i18n.t('achatMsg1')} {prix} {i18n.t('achatMsg2')}</Text>
   </View>
 )}
 /**
@@ -317,11 +330,15 @@ const AchatScreenPage = ({navigation, route}) => {
  * @param {*} param0 
  * @returns 
  */
-export function PanierScreen({navigation}) {
+export function PanierScreen({navigation, route}) {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
+  const myI18n = route.params.i18n;
+  const msg = myI18n.t('confirmerAcheter');
+  setI18n(myI18n);
   return (
     <stack.Navigator>
       <stack.Screen name='PanierPage' component={PanierScreenPage} options={{title:""}}/>
-      <stack.Screen name='AchatPage' component={AchatScreenPage} options={{title:"Confirmation d'achat"}}/>
+      <stack.Screen name='AchatPage' component={AchatScreenPage} options={{title:msg}}/>
     </stack.Navigator>
   )
 }
