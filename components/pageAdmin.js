@@ -1,11 +1,17 @@
 import { useState, useEffect } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
-import { obtenirProduits } from './panier';
+import { obtenirProduits, useMyContext } from './panier';
 import { Database } from './database';
 
-const ManageScreen = ({ navigation }) => {
+const ManageScreen = ({navigation, route}) => {
+  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
   const db = new Database("produits");
   const [produits, setProduits] = useState([]);
+
+  const myI18n = route.params.i18n;
+  setI18n(myI18n);
+  console.log(i18n);
+  console.log('-000000000000000-');
 
   useEffect(() => {
     obtenirProduits(setProduits);

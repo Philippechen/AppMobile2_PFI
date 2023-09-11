@@ -189,6 +189,7 @@ const TabsNavigator = () => {
                     <Ionicons name="settings" size={36} color={focused ? 'green' : 'lightgrey'} />
                   ),
                 }}
+                initialParams={{i18n:i18n}}
               />
             ) : (
               <>
