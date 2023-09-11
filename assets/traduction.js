@@ -24,6 +24,14 @@ export default {
         achatTitre:"Merci pour votre achat.",
         achatMsg1:"Votre command de ",
         achatMsg2:" a bien été confirmé",
+        aproposTitre:"Crédits de réalisation",
+        realise:"a réalisé",
+        et:"et",
+        sqlite:"la base de données SQlite",
+        pourLogin: "pour les logins",
+        pourProduit: "pour les Produits",
+        msgFinal:"De plus, vous pouvez trouver notre projet sur GitHub.",
+        msgLink:"Voir sur GitHub",
         lang:"fr"
     },
     en: {
@@ -49,6 +57,14 @@ export default {
         achatTitre:"Thank you for your purchase.",
         achatMsg1:"Your order of ",
         achatMsg2:" has been confirmed.",
+        aproposTitre:"Production credits",
+        realise:"created",
+        et:"and",
+        sqlite:"the SQlite database",
+        pourLogin: "for logins",
+        pourProduit: "for Produits",
+        msgFinal:"Additionally, you can find our project on GitHub.",
+        msgLink:"View on GitHub",
         lang:"en"
     }
 }

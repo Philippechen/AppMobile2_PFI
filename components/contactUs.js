@@ -1,9 +1,15 @@
 import { StyleSheet, Text, View, Linking } from 'react-native';
+import {useMyContext} from './panier'
 
-const ContactUsScreen = () => {
+const ContactUsScreen = ({navigation, route}) => {
   const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
   const myI18n = route.params.i18n;
   setI18n(myI18n);
+  console.log(i18n);
+  console.log(111111);
+  
+  if (typeof(i18n) == 'undefined')
+    return (<View></View>);
 
     const handleOpenURL = () => {
         Linking.openURL('https://github.com/Philippechen/AppMobile2_PFI.git');
@@ -11,20 +17,20 @@ const ContactUsScreen = () => {
     
     return (
         <View style={styles.container}>
-            <Text style={styles.textTitle}>Crédits de réalisation</Text>
+            <Text style={styles.textTitle}>{i18n.t('aproposTitre')}</Text>
             <View style={styles.textContainer}>
                 <Text style={styles.text}>
-                    <Text style={styles.nameHighlight}>Allan</Text> a réalisé : login.js, modal.js, pageAdmin.js, contactUs.js et la base de données SQlite pour les logins.
+                    <Text style={styles.nameHighlight}>Allan</Text> {i18n.t('realise')} : login.js, modal.js, pageAdmin.js, contactUs.js {i18n.t('et')} {i18n.t('sqlite')} {i18n.t('pourLogin')}.
                 </Text>
             </View>
             <View style={styles.textContainer}>
                 <Text style={styles.text}>
-                    <Text style={styles.nameHighlight}>Enlong</Text> a réalisé : panier.js, entrepots.js, l'internationalisation du projet et la base de données produits SQlite.
+                    <Text style={styles.nameHighlight}>Enlong</Text> {i18n.t('realise')} : panier.js, entrepots.js, l'internationalisation du projet {i18n.t('et')} {i18n.t('sqlite')} {i18n.t('pourProduit')}.
                 </Text>
             </View>
-            <Text style={styles.gitHubNote}>De plus, vous pouvez trouver notre projet sur GitHub.</Text>
+            <Text style={styles.gitHubNote}>{i18n.t('msgFinal')}</Text>
             <Text style={{color: 'blue', textDecorationLine: 'underline'}}onPress={handleOpenURL}>
-                Voir sur GitHub
+                {i18n.t('msgLink')}
             </Text>
         </View>
     )

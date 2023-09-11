@@ -11,7 +11,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
  Import des Components 
 */
 import EntrepotsScreen from './entrepots'
-import {initProduitsBD, PanierScreen, ProduitsScreen, PanierContextProvider} from './panier'
+import {initProduitsBD, PanierScreen, ProduitsScreen, PanierContextProvider, useMyContext} from './panier'
 import {SimpleModal} from './modal';
 import {ManageScreen} from './pageAdmin';
 import { ContactUsScreen } from './contactUs';
@@ -159,6 +159,7 @@ const HomeScreen = ({ navigation }) => {
 // menu bottom avec icons
 const TabsNavigator = () => {
   const {selectedUser, setSelectedUser, lang, setLang} = useContext(UserContext);
+ // const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
   const [panier1, setPanier1] = useState([]);
 
   //localisation 
