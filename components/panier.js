@@ -24,12 +24,12 @@ const db = new Database("produits");     //Utiliser la même BD
  * Initialize BD pour tous les produits, executer une seule fois
  */
 export const initProduitsBD = () => {
-  //  db.execute("DROP TABLE IF EXISTS produits");  // Supprime la table si elle existe
-  //  db.execute("CREATE TABLE IF NOT EXISTS produits (id TEXT PRIMARY KEY, nom TEXT, description TEXT, prix REAL, image TEXT);")
-  //    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('01', 'Dell Inspiron 16 Laptop','Nouvelle ordinateur', 949.98, 'https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg')"))
-  //    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('02', 'Ipad air 10th','Nouveau Ipad', 599.98, 'https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg')"))
-  //    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('03', 'Xbox series X','xbox Series', 1099.98, 'https://i.cbc.ca/1.3704325.1470158500!/fileImage/httpImage/xbox-one-s-photo-01.jpg')"))
-  //    .then(() => db.execute("INSERT INTO produits (id, nom, description, prix, image) VALUES ('04', 'Iphone 14 pro','Iphone pro', 1699.98, 'https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg')"))
+  db.execute("DROP TABLE IF EXISTS produits");  // Supprime la table si elle existe
+  db.execute("CREATE TABLE IF NOT EXISTS produits (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, description TEXT, prix REAL, image TEXT);")
+    .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Dell Inspiron 16 Laptop','', 949.98, 'https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg')"))
+    .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Ipad air 10th','', 599.98, 'https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg')"))
+    .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Xbox series X','', 1099.98, 'https://i.cbc.ca/1.3704325.1470158500!/fileImage/httpImage/xbox-one-s-photo-01.jpg')"))
+    .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Iphone 14 pro','', 1699.98, 'https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg')"))
     db.execute("SELECT * FROM produits")
     .catch(error => {
     console.error("An error occurred:", error);

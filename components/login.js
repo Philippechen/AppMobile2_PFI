@@ -18,6 +18,9 @@ import { ContactUsScreen } from './contactUs';
 //database
 import { Database } from './database';
 
+// Partager les données
+import {UserContext} from './context';
+
 // internationalisation et localisation
 import * as Localization from 'expo-localization';
 import {I18n} from 'i18n-js';
@@ -26,16 +29,9 @@ import translations from '../assets/traduction';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-//Verification de l'user (qui et recuperationd de l'user pour partout)
-const UserContext = createContext(null);
-
-//localisation
-const i18n = new I18n(translations);
-i18n.defaultLocale = 'fr';
-
 //titre qui se trouve en haut de l'app + id à droite + logout
 const StoreTitle = () => {
-  const { selectedUser, setSelectedUser, lang, setLang } = useContext(UserContext);
+  const { selectedUser, setSelectedUser, lang, setLang, i18n } = useContext(UserContext);
   
   return (
     <View style={styles.containerTitle}>
@@ -60,7 +56,7 @@ const HomeScreen = ({ navigation }) => {
   const [users, setUsers] = useState([]); // pour la db le useState.
   const [isModalVisible, setIsModalVisible] = useState(false);    //pour Modal
   const [chooseData, setChooseData] = useState();                 //pour Modal
-  const {selectedUser, setSelectedUser, lang, setLang} = useContext(UserContext); // Pour recuperer le user avec useContext
+  const {selectedUser, setSelectedUser, lang, setLang, i18n} = useContext(UserContext); // Pour recuperer le user avec useContext
   const [tempSelectedUser, setTempSelectedUser] = useState(null); // pour recuperer le user mais de maniere temporaire avant qu'il ne s'identifie
 
   const db = new Database("users");
@@ -158,8 +154,7 @@ const HomeScreen = ({ navigation }) => {
 
 // menu bottom avec icons
 const TabsNavigator = () => {
-  const {selectedUser, setSelectedUser, lang, setLang} = useContext(UserContext);
- // const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
+  const {selectedUser, setSelectedUser, lang, setLang, i18n} = useContext(UserContext);
   const [panier1, setPanier1] = useState([]);
 
   //localisation 
@@ -252,8 +247,15 @@ const MainNavigator = () => (
 export const Login = () => {
   const [selectedUser, setSelectedUser] = useState(null);     // prend user
   const [lang, setLang] = useState('fr');
+  //localisation
+  const traduction = new I18n(translations);
+  traduction.enableFallback = true;
+  traduction.defaultLocale = 'fr';
+  traduction.locale = lang;
+  const [i18n, setI18n] = useState(traduction);
+
   return (
-    <UserContext.Provider value={{ selectedUser, setSelectedUser, lang, setLang }}>
+    <UserContext.Provider value={{ selectedUser, setSelectedUser, lang, setLang, i18n }}>
       <NavigationContainer>
         <View>
           <Text>                                                                                                                                                                           </Text>

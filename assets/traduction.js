@@ -37,6 +37,14 @@ export default {
         msgSuc:"Produit ajouté avec succès.",
         msgErr:"Il y a eu une erreur lors de l'ajout du produit.",
         inventaire:"Inventaire",
+        annuler:"Annuler",
+        ajoutProduit:"Ajouter Produit",
+        ajouter:"Ajouter",
+        placeholderNom:"Nom du produit",
+        placeholderImage:"Image (lien URL)",
+        msgChamp:"Veuillez remplir tous les champs.",
+        msgPrix:"Veuillez entrer un prix valide.",
+        msgImage:"Veuillez fournir un lien d'image valide (jpeg, jpg, gif, png).",
         lang:"fr"
     },
     en: {
@@ -75,6 +83,14 @@ export default {
         msgSuc:"Product added successfully.",
         msgErr:"There was an error while adding the product",
         inventaire:"Inventory",
+        annuler:"Cancel",
+        ajoutProduit:"Add Product",
+        ajouter:"Add",
+        placeholderNom:"Name of product",
+        placeholderImage:"Image (link of URL)",
+        msgChamp:"Please complete all fields.",
+        msgPrix:"Please enter a valid price.",
+        msgImage:"Please provide a valid image link (jpeg, jpg, gif, png).",
         lang:"en"
     }
 }

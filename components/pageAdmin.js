@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, FlatList, Pressable, TextInput, Alert, ScrollView, Dimensions  } from 'react-native';
 import { obtenirProduits } from './panier';
 import { Database } from './database';
+// Partager les données
+import {UserContext} from './context';
 
 // Composant pour le formulaire d'ajout de produits
 const NewProduit = ({ addProduit }) => {
+  const { i18n } = useContext(UserContext);
   const [nom, setNom] = useState('');
   const [description, setDescription] = useState('');
   const [prix, setPrix] = useState('');
@@ -17,18 +20,18 @@ const NewProduit = ({ addProduit }) => {
     let finalImageURL = image ? { uri: image } : { uri: defaultImageLink };
     //verification
     if (!nom || !description || !prix) {
-      Alert.alert("Erreur", "Veuillez remplir tous les champs.");
+      Alert.alert(i18n.t('erreur'), i18n.t('msgChamp'));
       return;
     }
     if (isNaN(parseFloat(prix))) {
-      Alert.alert("Erreur", "Veuillez entrer un prix valide.");
+      Alert.alert(i18n.t('erreur'), i18n.t('msgPrix'));
       return;
     }
     // Vérifier l'extension de l'image
     if (image) {
       const imageRegex = /\.(jpeg|jpg|gif|png)$/;
       if (!imageRegex.test(image.toLowerCase())) {
-        Alert.alert("Erreur", "Veuillez fournir un lien d'image valide (jpeg, jpg, gif, png).");
+        Alert.alert(i18n.t('erreur'), i18n.t('msgImage'));
         return;
       }
     }
@@ -45,7 +48,7 @@ const NewProduit = ({ addProduit }) => {
     <ScrollView>
         <TextInput 
             style={styles.input} 
-            placeholder="Nom du produit" 
+            placeholder={i18n.t('placeholderNom')} 
             value={nom} 
             onChangeText={setNom} 
         />
@@ -58,36 +61,39 @@ const NewProduit = ({ addProduit }) => {
         />
         <TextInput 
             style={styles.input} 
-            placeholder="Prix" 
+            placeholder={i18n.t('prix')} 
             value={prix} 
             onChangeText={setPrix} 
             keyboardType="numeric" 
         />
         <TextInput 
             style={styles.input} 
-            placeholder="Image (lien URL)" 
+            placeholder={i18n.t('placeholderImage')} 
             value={image} 
             onChangeText={setImage} 
         />
         <Pressable style={styles.addButton} onPress={handleAddProduit}>
-            <Text style={styles.addButtonText}>Ajouter</Text>
+            <Text style={styles.addButtonText}>{i18n.t('ajouter')}</Text>
         </Pressable>
     </ScrollView>
 </View>
   );
 };
 
-const ButtonShowHide = ({ isShown, toggleShow }) => (
+const ButtonShowHide = ({ isShown, toggleShow }) => {
+  const { i18n } = useContext(UserContext);
+  return (
   <View style={styles.buttonContainer}>
     <Pressable
       style={[styles.toggleButton, isShown ? styles.buttonShown : styles.buttonHidden]}
       onPress={toggleShow}>
-      <Text style={styles.toggleButtonText}>{isShown ? 'Annuler' : 'Ajouter Produit'}</Text>
+      <Text style={styles.toggleButtonText}>{isShown ? i18n.t('annuler') : i18n.t('ajoutProduit')}</Text>
     </Pressable>
   </View>
-);
+)};
 
 const ManageScreen = ({ navigation }) => {
+  const { i18n } = useContext(UserContext);
   const db = new Database("produits");
   const [produits, setProduits] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -100,10 +106,10 @@ const ManageScreen = ({ navigation }) => {
     try {
       await db.execute("INSERT INTO produits (nom, description, prix, image) VALUES (?, ?, ?, ?)", [produit.nom, produit.description, produit.prix, produit.image]);
       obtenirProduits(setProduits);
-      Alert.alert("Succès", "Produit ajouté avec succès.");
+      Alert.alert(i18n.t('sucess'), i18n.t('msgSuc'));
     } catch (error) {
       console.error("Erreur lors de l'ajout du produit:", error);
-      Alert.alert("Erreur", "Il y a eu une erreur lors de l'ajout du produit.");
+      Alert.alert(i18n.t('erreur'), i18n.t('msgErr'));
     }
   };
   
@@ -131,14 +137,14 @@ const ManageScreen = ({ navigation }) => {
         <Text>{produit.prix}$</Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={() => supprimerProduit(produit.id)}>
-        <Text style={styles.buttonText}>Supprimer</Text>
+        <Text style={styles.buttonText}>{i18n.t('supprimer')}</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Inventaire Electro+</Text>
+      <Text style={styles.title}>{i18n.t('inventaire')} Electro+</Text>
       <FlatList
         data={produits}
         renderItem={renderItem}
