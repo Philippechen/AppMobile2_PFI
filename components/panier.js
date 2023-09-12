@@ -16,6 +16,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { Text, StyleSheet, FlatList, View, Image, Pressable, Alert, Button } from 'react-native';
 import{ createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Database } from './database';
+// Partager les données
+import {UserContext} from './context';
 
 const stack = createNativeStackNavigator();
 const db = new Database("produits");     //Utiliser la même BD
@@ -24,12 +26,12 @@ const db = new Database("produits");     //Utiliser la même BD
  * Initialize BD pour tous les produits, executer une seule fois
  */
 export const initProduitsBD = () => {
-  db.execute("DROP TABLE IF EXISTS produits");  // Supprime la table si elle existe
-  db.execute("CREATE TABLE IF NOT EXISTS produits (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, description TEXT, prix REAL, image TEXT);")
-    .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Dell Inspiron 16 Laptop','', 949.98, 'https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg')"))
-    .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Ipad air 10th','', 599.98, 'https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg')"))
-    .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Xbox series X','', 1099.98, 'https://i.cbc.ca/1.3704325.1470158500!/fileImage/httpImage/xbox-one-s-photo-01.jpg')"))
-    .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Iphone 14 pro','', 1699.98, 'https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg')"))
+  // db.execute("DROP TABLE IF EXISTS produits");  // Supprime la table si elle existe
+  // db.execute("CREATE TABLE IF NOT EXISTS produits (id INTEGER PRIMARY KEY AUTOINCREMENT, nom TEXT, description TEXT, prix REAL, image TEXT);")
+  //   .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Dell Inspiron 16 Laptop','', 949.98, 'https://history-computer.com/wp-content/uploads/2023/01/shutterstock_2093652733-scaled.jpg')"))
+  //   .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Ipad air 10th','', 599.98, 'https://cdn.macstories.net/13359d69-6cbb-4ade-8a47-dc272b9a8849-1632256898935.jpeg')"))
+  //   .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Xbox series X','', 1099.98, 'https://i.cbc.ca/1.3704325.1470158500!/fileImage/httpImage/xbox-one-s-photo-01.jpg')"))
+  //   .then(() => db.execute("INSERT INTO produits (nom, description, prix, image) VALUES ('Iphone 14 pro','', 1699.98, 'https://hips.hearstapps.com/hmg-prod/images/iphone-lineup-2022-sq-1663704154.jpg')"))
     db.execute("SELECT * FROM produits")
     .catch(error => {
     console.error("An error occurred:", error);
@@ -56,10 +58,10 @@ export const obtenirProduits = (setProduits) => {
 const PanierContext = createContext();
 export const PanierContextProvider = ({ children }) => {
   const [paniersTous, setPaniersTous] = useState([]);
-  const [i18n, setI18n] = useState();
+  //const [i18n, setI18n] = useState();
 
   return (
-    <PanierContext.Provider value={{ paniersTous, setPaniersTous, i18n, setI18n }}>
+    <PanierContext.Provider value={{ paniersTous, setPaniersTous }}>
       {children}
     </PanierContext.Provider>
   );
@@ -75,7 +77,8 @@ export const useMyContext = () => useContext(PanierContext);
  * @returns 
  */
 const DetailScreenPage = ({navigation, route}) => {
-  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
+  const { paniersTous, setPaniersTous } = useMyContext();
+  const { i18n } = useContext(UserContext);
   const {id, nom, prix, description,image} = route.params.item;
 
   if (typeof(i18n) == 'undefined')
@@ -127,8 +130,7 @@ const DetailScreenPage = ({navigation, route}) => {
  * @returns 
  */
 const Produit = ({navigation, item}) => {
-  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
-  const {nom, prix, image} = item;
+  const {nom, image} = item;
   return (
     <Pressable 
       onPress={()=>{navigation.navigate("Details",{'item':item})}}
@@ -139,7 +141,6 @@ const Produit = ({navigation, item}) => {
         </View>
         <View>
           <Text styles={styles.nom}> {nom} </Text>
-          {/* <Text styles={styles.nom}> {i18n.t('prix')}: {prix} </Text> */}
         </View>
       </View>
     </Pressable>
@@ -176,9 +177,6 @@ const ProduitsScreenPage = ({navigation}) => {
  * @returns 
  */
 export function ProduitsScreen({navigation, route}) {
-  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
-  const myI18n = route.params.i18n;
-  setI18n(myI18n);
   return (
     <stack.Navigator>
       <stack.Screen name='ProduitList' component={ProduitsScreenPage} />
@@ -195,7 +193,8 @@ export function ProduitsScreen({navigation, route}) {
  * @returns 
  */
 const ProduitEnPanier = ({id, nom, prix, image, nbr}) => {
-  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
+  const { paniersTous, setPaniersTous } = useMyContext();
+  const { i18n } = useContext(UserContext);
 
   if (typeof(id) == "undefined") 
     return;
@@ -264,7 +263,8 @@ const ProduitEnPanier = ({id, nom, prix, image, nbr}) => {
  * @returns 
  */
 const PanierScreenPage = ({navigation, route}) => {
-  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
+  const { paniersTous, setPaniersTous } = useMyContext();
+  const { i18n } = useContext(UserContext);
   let prixTous = 0;
 
   if (typeof(i18n) == 'undefined')
@@ -314,7 +314,7 @@ const PanierScreenPage = ({navigation, route}) => {
 
 
 const AchatScreenPage = ({navigation, route}) => {
-  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
+  const { i18n } = useContext(UserContext);
   const prix = route.params.prix;
   return (
   <View style={styles.produit}>
@@ -331,10 +331,8 @@ const AchatScreenPage = ({navigation, route}) => {
  * @returns 
  */
 export function PanierScreen({navigation, route}) {
-  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
-  const myI18n = route.params.i18n;
-  const msg = myI18n.t('confirmerAcheter');
-  setI18n(myI18n);
+  const { i18n } = useContext(UserContext);
+  const msg = i18n.t('confirmerAcheter');
   return (
     <stack.Navigator>
       <stack.Screen name='PanierPage' component={PanierScreenPage} options={{title:""}}/>

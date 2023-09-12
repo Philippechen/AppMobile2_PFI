@@ -1,12 +1,10 @@
+import { useContext } from 'react';
 import { StyleSheet, Text, View, Linking } from 'react-native';
-import {useMyContext} from './panier'
+// Partager les données
+import {UserContext} from './context';
 
 const ContactUsScreen = ({navigation, route}) => {
-  const { paniersTous, setPaniersTous, i18n, setI18n } = useMyContext();
-  const myI18n = route.params.i18n;
-  setI18n(myI18n);
-  console.log(i18n);
-  console.log(111111);
+  const { i18n } = useContext(UserContext);
   
   if (typeof(i18n) == 'undefined')
     return (<View></View>);

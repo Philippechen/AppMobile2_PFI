@@ -184,7 +184,6 @@ const TabsNavigator = () => {
                     <Ionicons name="settings" size={36} color={focused ? 'green' : 'lightgrey'} />
                   ),
                 }}
-                initialParams={{i18n:i18n}}
               />
             ) : (
               <>
@@ -196,7 +195,6 @@ const TabsNavigator = () => {
                       <Ionicons name="list-circle" size={36} color={focused ? 'green' : 'lightgrey'} />
                     ),
                   }}
-                  initialParams={{i18n:i18n}}
                 />
                 <Tab.Screen
                   name={i18n.t('panier')}
@@ -206,7 +204,6 @@ const TabsNavigator = () => {
                       <Ionicons name="cart" size={36} color={focused ? 'green' : 'lightgrey'} />
                     ),
                   }}
-                  initialParams={{i18n:i18n}}
                 />
               </>
             )}
@@ -227,7 +224,6 @@ const TabsNavigator = () => {
                   <Ionicons name="search-circle-sharp" size={36} color={focused ? 'green' : 'lightgrey'} />
                 ),
               }}
-              initialParams={{i18n:i18n}}
             />
           </>
         )}
