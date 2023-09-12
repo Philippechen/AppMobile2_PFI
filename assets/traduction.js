@@ -32,6 +32,11 @@ export default {
         pourProduit: "pour les Produits",
         msgFinal:"De plus, vous pouvez trouver notre projet sur GitHub.",
         msgLink:"Voir sur GitHub",
+        sucess:"Succès",
+        erreur:"Erreur",
+        msgSuc:"Produit ajouté avec succès.",
+        msgErr:"Il y a eu une erreur lors de l'ajout du produit.",
+        inventaire:"Inventaire",
         lang:"fr"
     },
     en: {
@@ -65,6 +70,11 @@ export default {
         pourProduit: "for Produits",
         msgFinal:"Additionally, you can find our project on GitHub.",
         msgLink:"View on GitHub",
+        sucess:"Success",
+        erreur:"Error",
+        msgSuc:"Product added successfully.",
+        msgErr:"There was an error while adding the product",
+        inventaire:"Inventory",
         lang:"en"
     }
 }
