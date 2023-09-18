@@ -45,7 +45,7 @@ export default {
         msgChamp:"Veuillez remplir tous les champs.",
         msgPrix:"Veuillez entrer un prix valide.",
         msgImage:"Veuillez fournir un lien d'image valide (jpeg, jpg, gif, png).",
-        lang:"fr"
+        lang:"fr-CA"
     },
     en: {
         deconnection:"Logout",
@@ -91,6 +91,6 @@ export default {
         msgChamp:"Please complete all fields.",
         msgPrix:"Please enter a valid price.",
         msgImage:"Please provide a valid image link (jpeg, jpg, gif, png).",
-        lang:"en"
+        lang:"en-CA"
     }
 }

@@ -4,6 +4,10 @@ import { obtenirProduits } from './panier';
 import { Database } from './database';
 // Partager les données
 import {UserContext} from './context';
+//Pour localisation de currency
+import Intl from 'intl';
+import 'intl/locale-data/jsonp/fr-CA';
+import 'intl/locale-data/jsonp/en-CA';
 
 // Composant pour le formulaire d'ajout de produits
 const NewProduit = ({ addProduit }) => {
@@ -93,10 +97,14 @@ const ButtonShowHide = ({ isShown, toggleShow }) => {
 )};
 
 const ManageScreen = ({ navigation }) => {
-  const { i18n } = useContext(UserContext);
+  const { lang, i18n } = useContext(UserContext);
   const db = new Database("produits");
   const [produits, setProduits] = useState([]);
   const [showForm, setShowForm] = useState(false);
+
+  //Formatter currency selon la lang qu'on a choisi
+  const argentFormat = (lang == 'fr-CA') ? new Intl.NumberFormat('fr-CA', {style:"currency", currency:"CAD"}) :
+                                           new Intl.NumberFormat('en-CA', {style:"currency", currency:"CAD"});
 
   useEffect(() => {
     obtenirProduits(setProduits);
@@ -134,7 +142,7 @@ const ManageScreen = ({ navigation }) => {
       <View style={{ flex: 1 }}>
         <Text>{produit.nom}</Text>
         <Text>{produit.description}</Text>
-        <Text>{produit.prix}$</Text>
+        <Text>{argentFormat.format(produit.prix)}</Text>
       </View>
       <TouchableOpacity style={styles.button} onPress={() => supprimerProduit(produit.id)}>
         <Text style={styles.buttonText}>{i18n.t('supprimer')}</Text>

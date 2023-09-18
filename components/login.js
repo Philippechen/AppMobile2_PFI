@@ -127,7 +127,7 @@ const HomeScreen = ({ navigation }) => {
 
       <Pressable 
         style={styles.pressableLang}
-        onPress={() =>  { i18n.t('lang') == 'fr' ? setLang('en'): setLang('fr');
+        onPress={() =>  { i18n.t('lang') == 'fr-CA' ? setLang('en-CA'): setLang('fr-CA');
         }}>
         <Text style={styles.pressableText}>
           {i18n.t('lang')}
@@ -242,11 +242,11 @@ const MainNavigator = () => (
 //app maitre (ne pas toucher au <Text></Text> bug si on raccourcis l'espace creer. pourquoi ? no sé.)
 export const Login = () => {
   const [selectedUser, setSelectedUser] = useState(null);     // prend user
-  const [lang, setLang] = useState('fr');
+  const [lang, setLang] = useState(Localization.locale);
   //localisation
   const traduction = new I18n(translations);
   traduction.enableFallback = true;
-  traduction.defaultLocale = 'fr';
+  traduction.defaultLocale = Localization.locale;
   traduction.locale = lang;
   const [i18n, setI18n] = useState(traduction);
 

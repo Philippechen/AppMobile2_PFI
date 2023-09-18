@@ -19,6 +19,10 @@ import { Database } from './database';
 // Partager les données
 import {UserContext} from './context';
 
+import Intl from 'intl';
+import 'intl/locale-data/jsonp/fr-CA';
+import 'intl/locale-data/jsonp/en-CA';
+
 const stack = createNativeStackNavigator();
 const db = new Database("produits");     //Utiliser la même BD
 
@@ -78,18 +82,23 @@ export const useMyContext = () => useContext(PanierContext);
  */
 const DetailScreenPage = ({navigation, route}) => {
   const { paniersTous, setPaniersTous } = useMyContext();
-  const { i18n } = useContext(UserContext);
+  const { lang, i18n } = useContext(UserContext);
   const {id, nom, prix, description,image} = route.params.item;
 
   if (typeof(i18n) == 'undefined')
     return (<View></View>);
 
+  console.log(lang);
+  const argentFormat = (lang == 'fr-CA') ? new Intl.NumberFormat('fr-CA', {style:"currency", currency:"CAD"}) :
+                                           new Intl.NumberFormat('en-CA', {style:"currency", currency:"CAD"});
+                                          
+  console.log(argentFormat);
   return (
     <View style={styles.detail}>
       <Image source={{uri:image}} style={styles.imageDetail}/>
       <Text style={styles.titreDetail}> {nom} </Text>
       <View style={{alignItems: 'left', paddingTop:20}}>
-        <Text > {i18n.t('prix')}: {prix} </Text>
+        <Text > {i18n.t('prix')}: {argentFormat.format(prix)} </Text> 
         <Text > Description:{description} </Text>
       </View>
  
@@ -194,7 +203,7 @@ export function ProduitsScreen({navigation, route}) {
  */
 const ProduitEnPanier = ({id, nom, prix, image, nbr}) => {
   const { paniersTous, setPaniersTous } = useMyContext();
-  const { i18n } = useContext(UserContext);
+  const { lang, i18n } = useContext(UserContext);
 
   if (typeof(id) == "undefined") 
     return;
@@ -218,13 +227,16 @@ const ProduitEnPanier = ({id, nom, prix, image, nbr}) => {
     })
     setPaniersTous(nouvauPanier)
   }
+
+  const argentFormat = (lang == 'fr-CA') ? new Intl.NumberFormat('fr-CA', {style:"currency", currency:"CAD"}) :
+                                           new Intl.NumberFormat('en-CA', {style:"currency", currency:"CAD"});
   return (
     <View style={styles.panier}>
       <Image source={{uri:image}} style={styles.image}/>
 
       <View style={styles.panierEnonce}>
         <Text style={styles.panierTitre}> {nom} </Text>
-        <Text style={styles.panierText}> {i18n.t('prix')}: {prix} </Text>
+        <Text style={styles.panierText}> {i18n.t('prix')}: {argentFormat.format(prix)} </Text>
 
         <View style={styles.panierNbr}>
           <Button style={styles.panierNbrBtn} onPress={()=>{changeNbrProduit(-1)}} title="-"/>
@@ -264,8 +276,11 @@ const ProduitEnPanier = ({id, nom, prix, image, nbr}) => {
  */
 const PanierScreenPage = ({navigation, route}) => {
   const { paniersTous, setPaniersTous } = useMyContext();
-  const { i18n } = useContext(UserContext);
+  const { lang, i18n } = useContext(UserContext);
   let prixTous = 0;
+
+  const argentFormat = (lang == 'fr-CA') ? new Intl.NumberFormat('fr-CA', {style:"currency", currency:"CAD"}) :
+                                           new Intl.NumberFormat('en-CA', {style:"currency", currency:"CAD"});
 
   if (typeof(i18n) == 'undefined')
     return (<View></View>);
@@ -282,7 +297,7 @@ const PanierScreenPage = ({navigation, route}) => {
         keyExtractor={item=>item.id} 
       />
         
-      <Text style={{fontWeight:'bold', fontSize:20}} >{i18n.t('prixTous')}: {prixTous.toFixed(2)}</Text>
+      <Text style={{fontWeight:'bold', fontSize:20}} >{i18n.t('prixTous')}: {argentFormat.format(prixTous.toFixed(2))}</Text>
       <Pressable 
         style={[styles.panierBtn, {backgroundColor: 'red'}]}
         onPress={()=>{
