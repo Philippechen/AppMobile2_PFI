@@ -3,12 +3,13 @@
 export default {
     fr: {
         deconnection:"Déconnexion",
-        acceuil: "Acceuil",
+        acceuil: "Accueil",
         electroniques:"Électroniques",
         panier:"panier",
         entrepot:"Entrepôt",
         apropos:"À propos",
         bienvenue:"Bienvenue",
+        msgMotDePass:"Entrer votre mot de passe",
         confirmerAcheter:"Confirmation d'achat",
         oui:"Oui",
         non:"Non",
@@ -38,6 +39,7 @@ export default {
         msgErr:"Il y a eu une erreur lors de l'ajout du produit.",
         inventaire:"Inventaire",
         annuler:"Annuler",
+        continuer:"Continuer",
         ajoutProduit:"Ajouter Produit",
         ajouter:"Ajouter",
         placeholderNom:"Nom du produit",
@@ -45,6 +47,8 @@ export default {
         msgChamp:"Veuillez remplir tous les champs.",
         msgPrix:"Veuillez entrer un prix valide.",
         msgImage:"Veuillez fournir un lien d'image valide (jpeg, jpg, gif, png).",
+        modalAnnuler:"Vous avez annulé",
+        modelMotDePassIncorrect:"Mot de passe incorrect",
         lang:"fr-CA"
     },
     en: {
@@ -55,6 +59,7 @@ export default {
         entrepot:"Warehouse",
         apropos:"About",
         bienvenue:"Welcome",
+        msgMotDePass:"Enter your password",
         confirmerAcheter:"Purchase confirmation",
         oui:"Yes",
         non:"No",
@@ -84,6 +89,7 @@ export default {
         msgErr:"There was an error while adding the product",
         inventaire:"Inventory",
         annuler:"Cancel",
+        continuer:"Continue",
         ajoutProduit:"Add Product",
         ajouter:"Add",
         placeholderNom:"Name of product",
@@ -91,6 +97,8 @@ export default {
         msgChamp:"Please complete all fields.",
         msgPrix:"Please enter a valid price.",
         msgImage:"Please provide a valid image link (jpeg, jpg, gif, png).",
+        modalAnnuler:"Your have canceled",
+        modelMotDePassIncorrect:"Wrong password",
         lang:"en-CA"
     }
 }

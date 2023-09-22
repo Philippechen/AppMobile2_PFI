@@ -14,7 +14,7 @@ const SimpleModal = (props) => {
     const [passwordFailed, setPasswordFailed] = useState(false);
 
     closeModal = (bool, data) => {
-        if (data === 'Vous avez annulé') {
+        if (data === props.i18n.t('modalAnnuler')) {
             props.changeModalVisible(bool);
             props.setData(data);
             return;
@@ -28,7 +28,7 @@ const SimpleModal = (props) => {
         } else {
             setPasswordFailed(true);
             props.changeModalVisible(bool);
-            props.setData('Mot de passe incorrect');
+            props.setData(props.i18n.t('modelMotDePassIncorrect'));
         }
     }
     
@@ -41,11 +41,11 @@ const SimpleModal = (props) => {
                 <View style={styles.textView}>
                     <Text 
                         style={[styles.text, {fontSize:20} ]}>
-                        Bienvenue
+                        {props.i18n.t('bienvenue')}
                     </Text>
                     <Text 
                         style={styles.text}>
-                        Entrer votre mot de passe
+                        {props.i18n.t('msgMotDePass')}
                     </Text>
                     <TextInput 
                         style={styles.textInput}
@@ -58,11 +58,11 @@ const SimpleModal = (props) => {
                 <View style={styles.buttonsView}>
                     <TouchableOpacity 
                         style={styles.touchableOpacity}
-                        onPress={() => closeModal(false, 'Vous avez annulé')}    
+                        onPress={() => closeModal(false, props.i18n.t('modalAnnuler'))}    
                     >
                         <Text 
                             style={[styles.text, {color: 'blue'}]}>
-                            Annuler
+                            {props.i18n.t('annuler')}
                         </Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
@@ -71,7 +71,7 @@ const SimpleModal = (props) => {
                     >
                         <Text 
                             style={[styles.text, {color: 'blue'}]}>
-                            Continuer
+                            {props.i18n.t('continuer')}
                         </Text>
                     </TouchableOpacity>
                 </View>
