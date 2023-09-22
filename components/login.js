@@ -126,13 +126,11 @@ const HomeScreen = ({ navigation }) => {
       ))}
 
       <Pressable 
-        style={styles.pressableLang}
-        onPress={() =>  { i18n.t('lang') == 'fr-CA' ? setLang('en-CA'): setLang('fr-CA');
-        }}>
-        <Text style={styles.pressableText}>
-          {i18n.t('lang')}
-        </Text>
+        style={styles.floatingLangButton}
+        onPress={() =>  { i18n.t('lang') == 'fr-CA' ? setLang('en-CA'): setLang('fr-CA'); }}>
+        <Ionicons name="globe-outline" size={24} color="white" />
       </Pressable>
+
 
       <Modal
         transparent={true}
@@ -326,8 +324,6 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       color: '#4a90e2',
       textShadowColor: 'rgba(0, 0, 0, 0.1)',
-      textShadowOffset: { width: 1, height: 1 },
-      textShadowRadius: 5,
       letterSpacing: 1.5,
       textAlign: 'left',
     },
@@ -337,5 +333,20 @@ const styles = StyleSheet.create({
       color: 'gray',
       textAlign: 'right',
       marginRight: 30,
+    },
+    floatingLangButton: {
+      position: 'absolute', 
+      right: 20,
+      top: 20,
+      backgroundColor: '#4a90e2',  // Bleu
+      borderRadius: 50,  // Forme circulaire
+      width: 50,  
+      height: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
     },
   });
